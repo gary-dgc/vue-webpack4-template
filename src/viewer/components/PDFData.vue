@@ -16,8 +16,12 @@ function getDocument (url) {
   // return import(
   //   /* webpackChunkName: 'pdfjs-dist' */
   //   'pdfjs-dist/webpack').then(pdfjs => pdfjs.getDocument(url));
-
-  return pdfjsLib.getDocument(url).promise
+  const param = {
+    url,
+    cMapUrl: '../node_modules/pdfjs-dist/cmaps/',
+    cMapPacked: true
+  }
+  return pdfjsLib.getDocument(param).promise
 }
 
 // pdf: instance of PDFData
