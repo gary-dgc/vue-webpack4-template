@@ -3,19 +3,7 @@
     <PDFViewer
       v-bind="{url}"
       @document-errored="onDocumentErrored"
-    >
-      <template v-slot:toolbar="{scale, updateFit, updateScale, currentPage, updateCurrentPage, pageCount, togglePreview, isPreviewEnabled}">
-        <button @click.stop="togglePreview">
-          toggle
-        </button>
-        <button @click.stop="updateFit('width')">
-          width
-        </button>
-        <button @click.stop="updateFit('auto')">
-          fit
-        </button>
-      </template>
-    </PDFViewer>
+    />
   </div>
 </template>
 

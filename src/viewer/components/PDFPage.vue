@@ -206,6 +206,7 @@ export default {
     position: absolute;
     white-space: pre;
     cursor: text;
+    line-height: 1.2em;
     transform-origin: 0% 0%;
 }
 </style>

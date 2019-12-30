@@ -41,7 +41,8 @@ export default {
       required: true
     },
     scale: {
-      required: true
+      required: true,
+      type: Number
     },
     isPageFocused: {
       type: Boolean,

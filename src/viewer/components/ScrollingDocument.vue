@@ -42,7 +42,8 @@ export default {
 
   props: {
     pages: {
-      required: true
+      required: true,
+      type: Array
     },
     enablePageJump: {
       type: Boolean,
@@ -53,7 +54,8 @@ export default {
       default: 1
     },
     isParentVisible: {
-      default: true
+      default: true,
+      type: Boolean
     }
   },
 

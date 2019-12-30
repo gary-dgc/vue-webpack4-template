@@ -51,7 +51,7 @@ export default {
     },
     optimalScale: {
       type: Number,
-      default: 1.0
+      default: undefined
     },
     fit: {
       type: String,
@@ -59,7 +59,7 @@ export default {
     },
     currentPage: {
       type: Number,
-      default: 1
+      default: 0
     },
     isPreviewEnabled: {
       type: Boolean,

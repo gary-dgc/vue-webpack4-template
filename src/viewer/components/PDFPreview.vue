@@ -29,7 +29,8 @@ export default {
 
   props: {
     pages: {
-      required: true
+      required: true,
+      type: Array
     },
     pageCount: {
       type: Number,
@@ -44,7 +45,8 @@ export default {
       default: 1
     },
     isPreviewEnabled: {
-      default: false
+      default: false,
+      type: Boolean
     }
   },
 
