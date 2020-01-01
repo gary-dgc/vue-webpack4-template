@@ -30,6 +30,10 @@ export default class Annonator {
     this.helpers.rect = new Rect(this)
   }
 
+  getDocId () {
+    return DocInfo.doc_id
+  }
+
   /**
    * area, highlight, strikeout
    *

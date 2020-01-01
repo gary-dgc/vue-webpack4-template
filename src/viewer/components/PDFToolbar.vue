@@ -31,6 +31,20 @@
         @input="jumpPage"
       > / <span>{{ pageCount }}</span>
     </div>
+    <div style="flex: 1 1 auto; display: flex; margin-left: 10px">
+      <a
+        class="icon"
+        @click.prevent.stop="annoAction('area')"
+      >A</a>
+      <a
+        class="icon"
+        @click.prevent.stop="annoAction('highlight')"
+      >H</a>
+      <a
+        class="icon"
+        @click.prevent.stop="annoAction('strikeout')"
+      >S</a>
+    </div>
   </div>
 </template>
 
@@ -58,6 +72,7 @@ export default {
     updateFit: { type: Function, default: () => {} },
     updateScale: { type: Function, default: () => {} },
     updateCurrentPage: { type: Function, default: () => {} },
+    annoAction: { type: Function, default: () => {} },
     increment: {
       type: Number,
       default: 0.25

@@ -1,7 +1,7 @@
 <template>
   <div class="pdf-viewer">
     <header class="pdf-viewer__header box-shadow">
-      <PDFToolbar v-bind="{scale, updateFit, updateScale, currentPage, updateCurrentPage, pageCount, togglePreview, isPreviewEnabled}" />
+      <PDFToolbar v-bind="{scale, updateFit, updateScale, currentPage, updateCurrentPage, pageCount, togglePreview, isPreviewEnabled, annoAction}" />
     </header>
 
     <PDFData
@@ -109,6 +109,10 @@ export default {
 
     togglePreview () {
       this.isPreviewEnabled = !this.isPreviewEnabled
+    },
+
+    annoAction (type) {
+      console.log(type)
     }
   }
 }
