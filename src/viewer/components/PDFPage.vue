@@ -8,24 +8,23 @@
       ref="canvas"
       v-bind="canvasAttrs"
     />
-    <div
-      ref="textLayer"
-      class="textLayer"
+    <PDFAnno
+      ref="anno-layer"
+      v-bind="{scale, page}"
     />
   </div>
 </template>
 
 <script>
 import debug from 'debug'
-import pdfjsLib from 'pdfjs-dist/webpack.js'
-
+import PDFAnno from './PDFAnno'
 import { PIXEL_RATIO } from '../utils/constants'
 import visible from '../directives/visible.js'
 const log = debug('app:components/PDFPage')
 
 export default {
   name: 'PDFPage',
-
+  components: { PDFAnno },
   directives: {
     visible
   },
@@ -131,24 +130,7 @@ export default {
             page: this.page,
             text: `Rendered page ${this.pageNumber}`
           })
-          return this.page.getTextContent()
-        })
-        .then((textContent) => {
-          const textLayerDiv = this.$refs.textLayer;
-          [].slice.call(textLayerDiv.children).forEach((child) => {
-            textLayerDiv.removeChild(child)
-          })
-          const textLayer = pdfjsLib.renderTextLayer({
-            container: textLayerDiv,
-            textContent: textContent,
-            viewport: viewport
-          })
-
-          // Set text-fragments
-          // textLayer.setTextContent(textContent);
-
-          // Render text-fragments
-          textLayer._render()
+          this.$refs['anno-layer'].renderAnno()
         })
         .catch(response => {
           this.destroyRenderTask()
@@ -193,20 +175,5 @@ export default {
   position: relative;
   margin: 0 auto;
 }
-.textLayer{
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-}
-.textLayer > span {
-    color: transparent;
-    position: absolute;
-    white-space: pre;
-    cursor: text;
-    line-height: 1.2em;
-    transform-origin: 0% 0%;
-}
+
 </style>
