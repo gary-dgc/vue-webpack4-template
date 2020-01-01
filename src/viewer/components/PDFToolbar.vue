@@ -7,22 +7,18 @@
     <div class="pdf-zoom">
       <a
         class="icon"
-        :disabled="isDisabled"
         @click.prevent.stop="zoomIn"
       ><ZoomInIcon /></a>
       <a
         class="icon"
-        :disabled="isDisabled"
         @click.prevent.stop="zoomOut"
       ><ZoomOutIcon /></a>
       <a
         class="icon"
-        :disabled="isDisabled"
         @click.prevent.stop="fitWidth"
       ><ExpandIcon /></a>
       <a
         class="icon"
-        :disabled="isDisabled"
         @click.prevent.stop="fitAuto"
       ><ShrinkIcon /></a>
     </div>

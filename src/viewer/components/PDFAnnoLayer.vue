@@ -3,6 +3,7 @@
     class="anno-wrapper"
     @mousedown.left="onMouseDown"
     @mouseup.left="onMouseUp"
+    @mousemove.left="onMouseMove"
   >
     <svg
       ref="anno-layer"
@@ -17,29 +18,10 @@
 
 <script>
 import pdfjsLib from 'pdfjs-dist/webpack.js'
-/**
- * Get the current window selection as rects
- *
- * @return {Array} An Array of rects
- */
-function getSelectionRects () {
-  try {
-    const selection = window.getSelection()
-    const range = selection.getRangeAt(0)
-    const rects = range.getClientRects()
-
-    if (rects.length > 0 &&
-        rects[0].width > 0 &&
-        rects[0].height > 0) {
-      return rects
-    }
-  } catch (e) {}
-
-  return null
-}
+import Annonator from '../annonator'
 
 export default {
-  name: 'PDFAnno',
+  name: 'PDFAnnoLayer',
   props: {
     page: {
       type: Object, // instance of PDFPageProxy returned from pdf.getPage
@@ -85,14 +67,25 @@ export default {
         })
 
         textLayer._render()
+        // prepare the annonator
+        this.annonator = new Annonator({
+          pageNumber: this.page.pageNumber,
+          viewport: this.viewport,
+          svg: this.$refs['anno-layer']
+        })
       })
     },
     onMouseDown (e) {
-
+      if (!this.annonator) return
+      this.annonator.handleMousedown(e)
     },
     onMouseUp (e) {
-      const rects = getSelectionRects()
-      console.log(rects)
+      if (!this.annonator) return
+      this.annonator.handleMouseup(e)
+    },
+    onMouseMove (e) {
+      if (!this.annonator) return
+      this.annonator.handleMousemove(e)
     }
   }
 }

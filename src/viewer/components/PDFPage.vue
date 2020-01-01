@@ -8,7 +8,7 @@
       ref="canvas"
       v-bind="canvasAttrs"
     />
-    <PDFAnno
+    <PDFAnnoLayer
       ref="anno-layer"
       v-bind="{scale, page}"
     />
@@ -17,14 +17,14 @@
 
 <script>
 import debug from 'debug'
-import PDFAnno from './PDFAnno'
+import PDFAnnoLayer from './PDFAnnoLayer'
 import { PIXEL_RATIO } from '../utils/constants'
 import visible from '../directives/visible.js'
 const log = debug('app:components/PDFPage')
 
 export default {
   name: 'PDFPage',
-  components: { PDFAnno },
+  components: { PDFAnnoLayer },
   directives: {
     visible
   },
