@@ -113,10 +113,9 @@ export default {
 
     drawPage () {
       if (this.renderTask) return
-      console.log('drawpage-- ' + this.scale)
-      const { viewport } = this
+      this.viewport = this.page.getViewport({ scale: this.scale }) //
       const canvasContext = this.$refs.canvas.getContext('2d')
-      const renderContext = { canvasContext, viewport }
+      const renderContext = { canvasContext, viewport: this.viewport }
 
       // PDFPageProxy#render
       // https://mozilla.github.io/pdf.js/api/draft/PDFPageProxy.html
@@ -143,8 +142,6 @@ export default {
     updateVisibility () {
       this.$parent.$emit('update-visibility')
       this.destroyRenderTask() //
-      console.log('page-- ' + this.scale)
-      this.viewport = this.page.getViewport({ scale: this.scale }) //
       this.drawPage() //
     },
 

@@ -38,6 +38,7 @@ import PDFDocument from './PDFDocument.vue'
 import PDFToolbar from './PDFToolbar.vue'
 import PDFData from './PDFData.vue'
 import PDFPreview from './PDFPreview.vue'
+import 'pdfjs-dist/web/pdf_viewer.css'
 
 function floor (value, precision) {
   const multiplier = Math.pow(10, precision || 0)

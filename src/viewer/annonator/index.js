@@ -15,7 +15,7 @@ export function removeAnnoEventListener () {
 
 const AnnoInfo = {
   doc_id: '',
-  anno_type: ''
+  anno_type: 'edit'
 }
 
 export function setAnnoInfo (info = {}) {
@@ -38,21 +38,22 @@ export function getAnnonator ({ pageNumber, svg, viewport } = {}) {
   if (!pageNumber) return
   if (!anno) {
     anno = new Annonator({ pageNumber, svg, viewport })
-    console.log(pageNumber)
     Annotators[pageNumber] = anno
   }
   return anno
 }
 
 export function enableAnno (type) {
+  AnnoInfo.anno_type = type
   fireAnnoEvent('anno:enable', type)
 }
 
 class Annonator {
-  constructor ({ pageNumber, svg, viewport } = {}) {
+  constructor ({ pageNumber, svg, viewport, callback } = {}) {
     this.pageNumber = pageNumber
     this.svg = svg
     this.viewport = viewport
+    this.callback = callback
     this.helpers = {}
     this.reset()
     this.hook()
@@ -111,7 +112,9 @@ class Annonator {
   hook () {
     const _enableRef = function () {
       this.enable(...arguments)
+      this.callback(...arguments)
     }.bind(this)
+
     addAnnoEventListener('anno:enable', _enableRef)
     this._enableRef = _enableRef
   }

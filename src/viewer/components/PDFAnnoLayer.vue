@@ -11,15 +11,21 @@
     />
     <div
       ref="text-layer"
-      class="text-layer"
+      class="textLayer"
+      v-bind="textAttrs"
     />
   </div>
 </template>
 
 <script>
 import pdfjsLib from 'pdfjs-dist/webpack.js'
-import { getAnnonator } from '../annonator'
+import { getAnnonator, getAnnoInfo } from '../annonator'
 import { PIXEL_RATIO } from '../utils/constants'
+
+function floor (value, precision) {
+  const multiplier = Math.pow(10, precision || 0)
+  return Math.floor(value * multiplier) / multiplier
+}
 
 export default {
   name: 'PDFAnnoLayer',
@@ -36,30 +42,43 @@ export default {
   data () {
     return {
       viewport: undefined,
-      annotations: []
+      annotations: [],
+      listener: () => {},
+      annoType: getAnnoInfo().anno_type
     }
   },
   computed: {
     svgAttrs () {
       if (!this.viewport) return {}
+      const zIndex = !['highlight', 'strikeout'].includes(this.annoType) ? 20 : 10
       const { width, height } = this.viewport
       const [pixelWidth, pixelHeight] = [width, height].map(dim => Math.ceil(dim / PIXEL_RATIO))
       return {
         width: Math.ceil(width),
         height: Math.ceil(height),
-        style: `width: ${pixelWidth}px; height: ${pixelHeight}px;`
+        style: `width: ${pixelWidth}px; height: ${pixelHeight}px;z-index: ${zIndex}`
+      }
+    },
+    textAttrs () {
+      const zIndex = ['highlight', 'strikeout'].includes(this.annoType) ? 20 : 10
+      return {
+        style: `z-index: ${zIndex}`
       }
     }
   },
   destroyed () {
-    if (!this.annonator) return
-    this.annonator.release()
+    if (this.annonator) {
+      this.annonator.release()
+    }
   },
   methods: {
     renderAnno () {
-      console.log('anno-- ' + this.scale)
-      this.viewport = this.page.getViewport({ scale: this.scale })
-      const textLayerDiv = this.$refs['text-layer'];
+      this.viewport = this.$parent.actualSizeViewport
+      const defaultViewport = this.viewport.clone({ scale: 1.0 })
+      const textLayerDiv = this.$refs['text-layer']
+
+      const textLayerScale = floor(textLayerDiv.clientWidth / defaultViewport.width, 2)
+      const textViewport = this.page.getViewport({ scale: textLayerScale });
 
       [].slice.call(textLayerDiv.children).forEach((child) => {
         textLayerDiv.removeChild(child)
@@ -69,7 +88,7 @@ export default {
         const textLayer = pdfjsLib.renderTextLayer({
           container: textLayerDiv,
           textContent: textContent,
-          viewport: this.viewport
+          viewport: textViewport
         })
 
         textLayer._render()
@@ -77,9 +96,13 @@ export default {
         this.annonator = getAnnonator({
           pageNumber: this.page.pageNumber,
           viewport: this.viewport,
-          svg: this.$refs['anno-layer']
+          svg: this.$refs['anno-layer'],
+          callback: this.onAnnoEvent
         })
       })
+    },
+    onAnnoEvent (type) {
+      this.annoType = type
     },
     onMouseDown (e) {
       if (!this.annonator) return
@@ -107,20 +130,5 @@ export default {
   bottom: 0;
   overflow: hidden;
 }
-.text-layer{
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-}
 
-.text-layer > span {
-  color: transparent;
-  position: absolute;
-  white-space: pre;
-  cursor: text;
-  transform-origin: 0% 0%;
-}
 </style>
