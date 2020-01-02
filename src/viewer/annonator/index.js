@@ -33,11 +33,11 @@ export function getAnnoInfo (key) {
 }
 
 const Annotators = {}
-export function getAnnonator ({ pageNumber, svg, viewport } = {}) {
+export function getAnnonator ({ pageNumber, svg, viewport, callback } = {}) {
   let anno = Annotators[pageNumber]
   if (!pageNumber) return
   if (!anno) {
-    anno = new Annonator({ pageNumber, svg, viewport })
+    anno = new Annonator({ pageNumber, svg, viewport, callback })
     Annotators[pageNumber] = anno
   }
   return anno

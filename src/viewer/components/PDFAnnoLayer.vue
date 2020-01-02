@@ -1,14 +1,19 @@
 <template>
   <div
-    class="anno-wrapper"
+    class="anno-container"
     @mousedown.left="onMouseDown($event)"
     @mouseup.left="onMouseUp($event)"
     @mousemove.left="onMouseMove($event)"
   >
-    <svg
-      ref="anno-layer"
-      v-bind="svgAttrs"
-    />
+    <div
+      class="anno-wrapper"
+      v-bind="wrapperAttrs"
+    >
+      <svg
+        ref="anno-layer"
+        v-bind="svgAttrs"
+      />
+    </div>
     <div
       ref="text-layer"
       class="textLayer"
@@ -48,15 +53,22 @@ export default {
     }
   },
   computed: {
+    wrapperAttrs () {
+      const zIndex = !['highlight', 'strikeout'].includes(this.annoType) ? 20 : 10
+      console.log(this.annoType)
+      return {
+        style: `z-index: ${zIndex}`
+      }
+    },
     svgAttrs () {
       if (!this.viewport) return {}
-      const zIndex = !['highlight', 'strikeout'].includes(this.annoType) ? 20 : 10
+
       const { width, height } = this.viewport
       const [pixelWidth, pixelHeight] = [width, height].map(dim => Math.ceil(dim / PIXEL_RATIO))
       return {
         width: Math.ceil(width),
         height: Math.ceil(height),
-        style: `width: ${pixelWidth}px; height: ${pixelHeight}px;z-index: ${zIndex}`
+        style: `width: ${pixelWidth}px; height: ${pixelHeight}px;`
       }
     },
     textAttrs () {
@@ -97,7 +109,7 @@ export default {
           pageNumber: this.page.pageNumber,
           viewport: this.viewport,
           svg: this.$refs['anno-layer'],
-          callback: this.onAnnoEvent
+          callback: function () { this.onAnnoEvent(...arguments) }.bind(this)
         })
       })
     },
@@ -122,7 +134,7 @@ export default {
 </script>
 
 <style>
-.anno-wrapper{
+.anno-container, .anno-wrapper{
   position: absolute;
   left: 0;
   top: 0;
