@@ -9,7 +9,7 @@
     @pages-reset="fitWidth"
   >
     <PDFPage
-      v-bind="{scale, optimalScale, page, isPageFocused, isElementFocused, annoType}"
+      v-bind="{scale, optimalScale, page, isPageFocused, isElementFocused}"
       @page-rendered="onPageRendered"
       @page-errored="onPageErrored"
       @page-focus="onPageFocused"
@@ -64,10 +64,6 @@ export default {
     isPreviewEnabled: {
       type: Boolean,
       default: false
-    },
-    annoType: {
-      type: String,
-      default: undefined
     }
   },
 

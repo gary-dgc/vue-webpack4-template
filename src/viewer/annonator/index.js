@@ -1,4 +1,17 @@
+import EventEmitter from 'events'
 import Rect from './helpers/Rect.js'
+
+const EE = new EventEmitter()
+
+export function fireAnnoEvent () {
+  EE.emit(...arguments)
+}
+export function addAnnoEventListener () {
+  EE.on(...arguments)
+}
+export function removeAnnoEventListener () {
+  EE.removeListener(...arguments)
+}
 
 const AnnoInfo = {
   doc_id: '',
@@ -19,19 +32,35 @@ export function getAnnoInfo (key) {
   }
 }
 
-export default class Annonator {
+const Annotators = {}
+export function getAnnonator ({ pageNumber, svg, viewport } = {}) {
+  let anno = Annotators[pageNumber]
+  if (!pageNumber) return
+  if (!anno) {
+    anno = new Annonator({ pageNumber, svg, viewport })
+    console.log(pageNumber)
+    Annotators[pageNumber] = anno
+  }
+  return anno
+}
+
+export function enableAnno (type) {
+  fireAnnoEvent('anno:enable', type)
+}
+
+class Annonator {
   constructor ({ pageNumber, svg, viewport } = {}) {
     this.pageNumber = pageNumber
     this.svg = svg
     this.viewport = viewport
     this.helpers = {}
-    this.initial()
+    this.reset()
+    this.hook()
   }
 
-  initial () {
+  reset () {
     this.helpers.rect = new Rect(this)
-    const type = this.getAnnoType()
-    if (['highlight', 'strikeout', 'area'].includes(type)) {
+    if (['highlight', 'strikeout', 'area'].includes(this.type)) {
       this.handler = this.helpers.rect
     } else {
       this.handler = undefined
@@ -42,49 +71,64 @@ export default class Annonator {
     return AnnoInfo.doc_id
   }
 
-  getAnnoType () {
-    return AnnoInfo.anno_type
-  }
-
   /**
    * area, highlight, strikeout
    *
   **/
-  enableRect (type) {
-    AnnoInfo.anno_type = type
-    this.initial()
-  }
-
-  enableEdit () {
-    AnnoInfo.anno_type = 'edit'
-    this.initial()
+  enable (type) {
+    this.type = type
+    this.reset()
   }
 
   disable () {
     this.handler = undefined
   }
 
-  handleMousedown (e) {
+  handleMousedown () {
     if (this.handler) {
-      this.handler.handleMousedown(e)
+      this.handler.handleMousedown(...arguments)
     }
   }
 
-  handleMousemove (e) {
+  handleMousemove () {
     if (this.handler) {
-      this.handler.handleMousemove(e)
+      this.handler.handleMousemove(...arguments)
     }
   }
 
-  handleMouseup (e) {
+  handleMouseup () {
     if (this.handler) {
-      this.handler.handleMouseup(e)
+      this.handler.handleMouseup(...arguments)
     }
   }
 
-  handleKeyup (e) {
+  handleKeyup () {
     if (this.handler) {
-      this.handler.handleKeyup(e)
+      this.handler.handleKeyup(...arguments)
     }
   }
+
+  hook () {
+    const _enableRef = function () {
+      this.enable(...arguments)
+    }.bind(this)
+    addAnnoEventListener('anno:enable', _enableRef)
+    this._enableRef = _enableRef
+  }
+
+  release () {
+    const { _enableRef } = this
+    removeAnnoEventListener('anno:enable', _enableRef)
+    delete Annotators[this.pageNumber]
+  }
+}
+
+export default {
+  setAnnoInfo,
+  getAnnoInfo,
+  getAnnonator,
+  enableAnno,
+  fireAnnoEvent,
+  addAnnoEventListener,
+  removeAnnoEventListener
 }

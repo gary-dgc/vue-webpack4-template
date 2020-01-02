@@ -11,7 +11,7 @@ export default class RectHandler {
     this.originX = 0
     this.originY = 0
     this.parent = parent
-    this.getAnnoType = parent.getAnnoType
+    this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId
   }
 

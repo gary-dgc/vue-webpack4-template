@@ -18,7 +18,7 @@
 
 <script>
 import pdfjsLib from 'pdfjs-dist/webpack.js'
-import Annonator from '../annonator'
+import { getAnnonator } from '../annonator'
 
 export default {
   name: 'PDFAnnoLayer',
@@ -50,14 +50,11 @@ export default {
       }
     }
   },
+  destroyed () {
+    if (!this.annonator) return
+    this.annonator.release()
+  },
   methods: {
-    setAnnoType (type) {
-      this.annoType = type
-      if (type === 'highlight' && this.annonator) {
-        console.log(this.page.pageNumber)
-        this.annonator.enableRect(type)
-      }
-    },
     renderAnno () {
       this.viewport = this.page.getViewport({ scale: this.scale })
       const textLayerDiv = this.$refs['text-layer'];
@@ -75,7 +72,7 @@ export default {
 
         textLayer._render()
         // prepare the annonator
-        this.annonator = new Annonator({
+        this.annonator = getAnnonator({
           pageNumber: this.page.pageNumber,
           viewport: this.viewport,
           svg: this.$refs['anno-layer']
