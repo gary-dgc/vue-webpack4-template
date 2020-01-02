@@ -9,7 +9,7 @@
     @pages-reset="fitWidth"
   >
     <PDFPage
-      v-bind="{scale, optimalScale, page, isPageFocused, isElementFocused}"
+      v-bind="{scale, page, isPageFocused, isElementFocused}"
       @page-rendered="onPageRendered"
       @page-errored="onPageErrored"
       @page-focus="onPageFocused"
@@ -48,10 +48,6 @@ export default {
     scale: {
       type: Number,
       default: 1.0
-    },
-    optimalScale: {
-      type: Number,
-      default: undefined
     },
     fit: {
       type: String,
@@ -118,7 +114,7 @@ export default {
     // and a subjective scale factor based on the screen size.
     fitWidth () {
       const scale = this.pageWidthScale()
-      this.updateScale(scale, { isOptimal: !this.optimalScale })
+      this.updateScale(scale)
     },
 
     fitHeight () {
@@ -131,9 +127,9 @@ export default {
       this.updateScale(scale)
     },
 
-    updateScale (scale, { isOptimal = false } = {}) {
+    updateScale (scale) {
       if (!scale) return
-      this.$emit('scale-change', { scale, isOptimal })
+      this.$emit('scale-change', scale)
     },
 
     onPageJump (scrollTop) {

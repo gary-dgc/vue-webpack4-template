@@ -19,6 +19,7 @@
 <script>
 import pdfjsLib from 'pdfjs-dist/webpack.js'
 import { getAnnonator } from '../annonator'
+import { PIXEL_RATIO } from '../utils/constants'
 
 export default {
   name: 'PDFAnnoLayer',
@@ -41,12 +42,12 @@ export default {
   computed: {
     svgAttrs () {
       if (!this.viewport) return {}
-      let { width, height } = this.viewport;
-      [width, height] = [width, height].map(dim => Math.ceil(dim))
+      const { width, height } = this.viewport
+      const [pixelWidth, pixelHeight] = [width, height].map(dim => Math.ceil(dim / PIXEL_RATIO))
       return {
-        width,
-        height,
-        style: `width: ${width}px; height: ${height}px;`
+        width: Math.ceil(width),
+        height: Math.ceil(height),
+        style: `width: ${pixelWidth}px; height: ${pixelHeight}px;`
       }
     }
   },
@@ -56,6 +57,7 @@ export default {
   },
   methods: {
     renderAnno () {
+      console.log('anno-- ' + this.scale)
       this.viewport = this.page.getViewport({ scale: this.scale })
       const textLayerDiv = this.$refs['text-layer'];
 
@@ -115,10 +117,10 @@ export default {
 }
 
 .text-layer > span {
-    color: transparent;
-    position: absolute;
-    white-space: pre;
-    cursor: text;
-    transform-origin: 0% 0%;
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
 }
 </style>

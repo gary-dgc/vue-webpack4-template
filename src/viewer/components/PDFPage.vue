@@ -38,10 +38,6 @@ export default {
       type: Number,
       required: true
     },
-    optimalScale: {
-      type: Number,
-      required: true
-    },
     isPageFocused: {
       type: Boolean,
       default: false
@@ -96,7 +92,8 @@ export default {
   created () {
     // PDFPageProxy#getViewport
     // https://mozilla.github.io/pdf.js/api/draft/PDFPageProxy.html
-    this.viewport = this.page.getViewport({ scale: this.optimalScale })
+
+    this.viewport = this.page.getViewport({ scale: this.scale })
   },
 
   mounted () {
@@ -116,7 +113,7 @@ export default {
 
     drawPage () {
       if (this.renderTask) return
-
+      console.log('drawpage-- ' + this.scale)
       const { viewport } = this
       const canvasContext = this.$refs.canvas.getContext('2d')
       const renderContext = { canvasContext, viewport }
@@ -145,8 +142,8 @@ export default {
 
     updateVisibility () {
       this.$parent.$emit('update-visibility')
-      console.log(this.optimalScale)
       this.destroyRenderTask() //
+      console.log('page-- ' + this.scale)
       this.viewport = this.page.getViewport({ scale: this.scale }) //
       this.drawPage() //
     },

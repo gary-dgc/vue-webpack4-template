@@ -87,11 +87,11 @@ export default {
       this.updateCurrentPage(parseInt(event.target.value, 10))
     },
     zoomIn () {
-      this.updateScale({ scale: this.scale + this.increment })
+      this.updateScale(this.scale + this.increment)
     },
     zoomOut () {
       if (this.scale <= this.increment) return
-      this.updateScale({ scale: this.scale - this.increment })
+      this.updateScale(this.scale - this.increment)
     },
     fitWidth () {
       this.updateFit('width')
