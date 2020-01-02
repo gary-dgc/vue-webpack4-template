@@ -1,9 +1,9 @@
 <template>
   <div
     class="anno-wrapper"
-    @mousedown.left="onMouseDown"
-    @mouseup.left="onMouseUp"
-    @mousemove.left="onMouseMove"
+    @mousedown.left="onMouseDown($event)"
+    @mouseup.left="onMouseUp($event)"
+    @mousemove.left="onMouseMove($event)"
   >
     <svg
       ref="anno-layer"
@@ -51,6 +51,13 @@ export default {
     }
   },
   methods: {
+    setAnnoType (type) {
+      this.annoType = type
+      if (type === 'highlight' && this.annonator) {
+        console.log(this.page.pageNumber)
+        this.annonator.enableRect(type)
+      }
+    },
     renderAnno () {
       this.viewport = this.page.getViewport({ scale: this.scale })
       const textLayerDiv = this.$refs['text-layer'];
@@ -85,6 +92,7 @@ export default {
     },
     onMouseMove (e) {
       if (!this.annonator) return
+
       this.annonator.handleMousemove(e)
     }
   }

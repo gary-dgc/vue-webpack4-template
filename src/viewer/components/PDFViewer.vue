@@ -24,7 +24,7 @@
         <PDFDocument
           class="pdf-viewer__document"
           :class="{ 'preview-enabled': isPreviewEnabled }"
-          v-bind="{pages, scale, optimalScale, fit, currentPage, pageCount, isPreviewEnabled}"
+          v-bind="{pages, scale, optimalScale, fit, currentPage, pageCount, isPreviewEnabled, annoType}"
           @scale-change="updateScale"
         />
       </template>
@@ -65,7 +65,8 @@ export default {
       fit: undefined,
       currentPage: 1,
       pageCount: undefined,
-      isPreviewEnabled: false
+      isPreviewEnabled: false,
+      annoType: ''
     }
   },
 
@@ -112,7 +113,7 @@ export default {
     },
 
     annoAction (type) {
-      console.log(type)
+      this.annoType = type
     }
   }
 }

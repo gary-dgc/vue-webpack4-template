@@ -49,6 +49,10 @@ export default {
     isElementFocused: {
       type: Boolean,
       default: false
+    },
+    annoType: {
+      type: String,
+      default: undefined
     }
   },
 
@@ -90,6 +94,10 @@ export default {
 
     isElementFocused (isElementFocused) {
       if (isElementFocused) this.focusPage()
+    },
+
+    annoType (newVal) {
+      this.$refs['anno-layer'].setAnnoType(newVal)
     }
   },
 

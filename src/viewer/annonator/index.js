@@ -1,18 +1,21 @@
 import Rect from './helpers/Rect.js'
 
-const DocInfo = {}
+const AnnoInfo = {
+  doc_id: '',
+  anno_type: ''
+}
 
-export function setDocInfo (info = {}) {
+export function setAnnoInfo (info = {}) {
   Object.keys(info).forEach((key) => {
-    DocInfo[key] = info[key]
+    AnnoInfo[key] = info[key]
   })
 }
 
-export function getDocInfo (key) {
+export function getAnnoInfo (key) {
   if (key) {
-    return DocInfo[key]
+    return AnnoInfo[key]
   } else {
-    return DocInfo
+    return AnnoInfo
   }
 }
 
@@ -23,15 +26,24 @@ export default class Annonator {
     this.viewport = viewport
     this.helpers = {}
     this.initial()
-    this.handler = undefined
   }
 
   initial () {
     this.helpers.rect = new Rect(this)
+    const type = this.getAnnoType()
+    if (['highlight', 'strikeout', 'area'].includes(type)) {
+      this.handler = this.helpers.rect
+    } else {
+      this.handler = undefined
+    }
   }
 
   getDocId () {
-    return DocInfo.doc_id
+    return AnnoInfo.doc_id
+  }
+
+  getAnnoType () {
+    return AnnoInfo.anno_type
   }
 
   /**
@@ -39,8 +51,13 @@ export default class Annonator {
    *
   **/
   enableRect (type) {
-    this.handler = this.helpers.rect
-    this.handler.setType(type)
+    AnnoInfo.anno_type = type
+    this.initial()
+  }
+
+  enableEdit () {
+    AnnoInfo.anno_type = 'edit'
+    this.initial()
   }
 
   disable () {
@@ -49,25 +66,25 @@ export default class Annonator {
 
   handleMousedown (e) {
     if (this.handler) {
-      this.handler.handleMousedown()
+      this.handler.handleMousedown(e)
     }
   }
 
   handleMousemove (e) {
     if (this.handler) {
-      this.handler.handleMousemove()
+      this.handler.handleMousemove(e)
     }
   }
 
   handleMouseup (e) {
     if (this.handler) {
-      this.handler.handleMouseup()
+      this.handler.handleMouseup(e)
     }
   }
 
   handleKeyup (e) {
     if (this.handler) {
-      this.handler.handleKeyup()
+      this.handler.handleKeyup(e)
     }
   }
 }

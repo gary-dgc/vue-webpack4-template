@@ -34,6 +34,10 @@
     <div style="flex: 1 1 auto; display: flex; margin-left: 10px">
       <a
         class="icon"
+        @click.prevent.stop="annoAction('edit')"
+      >E</a>
+      <a
+        class="icon"
         @click.prevent.stop="annoAction('area')"
       >A</a>
       <a

@@ -7,15 +7,12 @@ import {
 
 export default class RectHandler {
   constructor (parent) {
-    this.type = ''
     this.overlay = undefined
     this.originX = 0
     this.originY = 0
     this.parent = parent
-  }
-
-  setType (type) {
-    this.type = type
+    this.getAnnoType = parent.getAnnoType
+    this.getDocId = parent.getDocId
   }
 
   /**
@@ -24,11 +21,11 @@ export default class RectHandler {
  * @param {Event} e The DOM event to handle
  */
   handleMousedown (e) {
-    if (this.type !== 'area') {
+    if (this.getAnnoType() !== 'area') {
       return
     }
     const { svg } = this.parent
-    const rect = this.svg.getBoundingClientRect()
+    const rect = svg.getBoundingClientRect()
     this.originY = e.clientY
     this.originX = e.clientX
 
@@ -47,6 +44,9 @@ export default class RectHandler {
  * @param {Event} e The DOM event to handle
  */
   handleMousemove (e) {
+    if (['highlight', 'strikeout'].includes(this.getAnnoType())) {
+      return
+    }
     const { svg } = this.parent
     const rect = svg.getBoundingClientRect()
 
@@ -66,8 +66,9 @@ export default class RectHandler {
  */
   handleMouseup (e) {
     let rects
-    if (this.type !== 'area' && (rects = getSelectionRects())) {
-      this.saveRect(this.type, [...rects].map((r) => {
+    const type = this.getAnnoType()
+    if (['highlight', 'strikeout'].includes(type) && (rects = getSelectionRects())) {
+      this.saveRect(type, [...rects].map((r) => {
         return {
           top: r.top,
           left: r.left,
@@ -75,9 +76,9 @@ export default class RectHandler {
           height: r.height
         }
       }))
-    } else if (this.type === 'area' && this.overlay) {
+    } else if (type === 'area' && this.overlay) {
       const rect = this.svg.getBoundingClientRect()
-      this.saveRect(this.type, [{
+      this.saveRect(type, [{
         top: parseInt(this.overlay.style.top, 10) + rect.top,
         left: parseInt(this.overlay.style.left, 10) + rect.left,
         width: parseInt(this.overlay.style.width, 10),
@@ -161,8 +162,8 @@ export default class RectHandler {
       annotation.height = rect.height
     }
 
-    const { documentId, pageNumber } = this.parent
-
+    const { pageNumber } = this.parent
+    const documentId = this.getDocId()
     // Add the annotation
     console.log(`docId=${documentId} / pagenum=${pageNumber}`)
     console.log(annotation)
