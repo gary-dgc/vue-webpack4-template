@@ -5,15 +5,10 @@
     @mouseup.left="onMouseUp($event)"
     @mousemove.left="onMouseMove($event)"
   >
-    <div
-      class="anno-wrapper"
-      v-bind="wrapperAttrs"
-    >
-      <svg
-        ref="anno-layer"
-        v-bind="svgAttrs"
-      />
-    </div>
+    <svg
+      ref="anno-layer"
+      v-bind="svgAttrs"
+    />
     <div
       ref="text-layer"
       class="textLayer"
@@ -53,13 +48,6 @@ export default {
     }
   },
   computed: {
-    wrapperAttrs () {
-      const zIndex = !['highlight', 'strikeout'].includes(this.annoType) ? 20 : 10
-
-      return {
-        style: `z-index: ${zIndex}`
-      }
-    },
     svgAttrs () {
       if (!this.viewport) return {}
 
@@ -72,9 +60,9 @@ export default {
       }
     },
     textAttrs () {
-      const zIndex = ['highlight', 'strikeout'].includes(this.annoType) ? 20 : 10
+      const visibility = ['highlight', 'strikeout'].includes(this.annoType) ? 'visible' : 'hidden'
       return {
-        style: `z-index: ${zIndex}`
+        style: `visibility: ${visibility}`
       }
     }
   },
@@ -107,7 +95,7 @@ export default {
         // prepare the annonator
         this.annonator = getAnnonator({
           pageNumber: this.page.pageNumber,
-          viewport: textViewport,
+          viewport: this.viewport,
           svg: this.$refs['anno-layer'],
           callback: function () { this.onAnnoEvent(...arguments) }.bind(this)
         })
@@ -119,6 +107,7 @@ export default {
       }
       if (anno) {
         console.log(anno)
+        this.annonator.render(anno)
       }
     },
     onMouseDown (e) {

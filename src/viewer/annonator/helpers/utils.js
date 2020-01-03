@@ -2,58 +2,6 @@
 
 export const BORDER_COLOR = '#00BFFF'
 
-// const userSelectStyleSheet = createStyleSheet({
-//   body: {
-//     '-webkit-user-select': 'none',
-//     '-moz-user-select': 'none',
-//     '-ms-user-select': 'none',
-//     'user-select': 'none'
-//   }
-// })
-// userSelectStyleSheet.setAttribute('data-pdf-annotate-user-select', 'true')
-
-/**
- * Find the SVGElement that contains all the annotations for a page
- *
- * @param {Element} node An annotation within that container
- * @return {SVGElement} The container SVG or null if it can't be found
- */
-export function findSVGContainer (node) {
-  let parentNode = node
-
-  while ((parentNode = parentNode.parentNode) &&
-          parentNode !== document) {
-    if (parentNode.nodeName.toUpperCase() === 'SVG' &&
-        parentNode.getAttribute('data-pdf-annotate-container') === 'true') {
-      return parentNode
-    }
-  }
-
-  return null
-}
-
-/**
- * Find an SVGElement container at a given point
- *
- * @param {Number} x The x coordinate of the point
- * @param {Number} y The y coordinate of the point
- * @return {SVGElement} The container SVG or null if one can't be found
- */
-export function findSVGAtPoint (x, y) {
-  const elements = document.querySelectorAll('svg[data-pdf-annotate-container="true"]')
-
-  for (let i = 0, l = elements.length; i < l; i++) {
-    const el = elements[i]
-    const rect = el.getBoundingClientRect()
-
-    if (pointIntersectsRect(x, y, rect)) {
-      return el
-    }
-  }
-
-  return null
-}
-
 /**
  * Find an Element that represents an annotation at a given point
  *
@@ -61,8 +9,7 @@ export function findSVGAtPoint (x, y) {
  * @param {Number} y The y coordinate of the point
  * @return {Element} The annotation element or null if one can't be found
  */
-export function findAnnotationAtPoint (x, y) {
-  const svg = findSVGAtPoint(x, y)
+export function findAnnotationAtPoint (svg, x, y) {
   if (!svg) { return }
   const elements = svg.querySelectorAll('[data-pdf-annotate-type]')
 
@@ -112,7 +59,7 @@ export function getOffsetAnnotationRect (el) {
  * @param {Element} el The element to get the rect of
  * @return {Object} The dimensions of the element
  */
-export function getAnnotationRect (el) {
+export function getAnnotationRect (svg, el) {
   let h = 0; let w = 0; let x = 0; let y = 0
   const rect = el.getBoundingClientRect()
   // TODO this should be calculated somehow
@@ -197,7 +144,7 @@ export function getAnnotationRect (el) {
   // I assume that the scale is already being handled
   // natively by virtue of the `transform` attribute.
   if (!['svg', 'g'].includes(el.nodeName.toLowerCase())) {
-    result = scaleUp(findSVGAtPoint(rect.left, rect.top), result)
+    result = scaleUp(svg, result)
   }
 
   return result
@@ -330,4 +277,63 @@ export function getSelectionRects () {
   } catch (e) {}
 
   return null
+}
+
+const UPPER_REGEX = /[A-Z]/g
+
+// Don't convert these attributes from camelCase to hyphenated-attributes
+const BLACKLIST = [
+  'viewBox'
+]
+
+const keyCase = (key) => {
+  if (BLACKLIST.indexOf(key) === -1) {
+    key = key.replace(UPPER_REGEX, match => '-' + match.toLowerCase())
+  }
+  return key
+}
+
+/**
+ * Set attributes for a node from a map
+ *
+ * @param {Node} node The node to set attributes on
+ * @param {Object} attributes The map of key/value pairs to use for attributes
+ */
+export function setAttributes (node, attributes) {
+  Object.keys(attributes).forEach((key) => {
+    node.setAttribute(keyCase(key), attributes[key])
+  })
+}
+
+const REGEX_HASHLESS_HEX = /^([a-f0-9]{6}|[a-f0-9]{3})$/i
+
+/**
+ * Normalize a color value
+ *
+ * @param {String} color The color to normalize
+ * @return {String}
+ */
+export function normalizeColor (color) {
+  if (REGEX_HASHLESS_HEX.test(color)) {
+    color = `#${color}`
+  }
+  return color
+}
+
+const REGEXP = /[xy]/g
+const PATTERN = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+
+function replacement (c) {
+  const r = Math.random() * 16 | 0
+  const v = c === 'x' ? r : (r & 0x3 | 0x8)
+  return v.toString(16)
+}
+
+/**
+ * Generate a univierally unique identifier
+ *
+ * @return {String}
+ */
+export function uuid () {
+  return PATTERN.replace(REGEXP, replacement)
 }

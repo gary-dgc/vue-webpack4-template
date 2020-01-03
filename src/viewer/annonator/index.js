@@ -159,6 +159,34 @@ class Annonator {
   }
 
   /**
+   * Render the annotation
+   * @param {Annotation} annotation data
+  */
+  render (annotation) {
+    let child
+    switch (annotation.type) {
+      case 'area':
+      case 'highlight':
+      case 'strikeout':
+        child = this.helpers.rect.render(annotation)
+        break
+    }
+
+    // If no type was provided for an annotation it will result in node being null.
+    // Skip appending/transforming if node doesn't exist.
+    if (child) {
+      // Set attributes
+      child.setAttribute('data-pdf-annotate-id', annotation.uuid)
+      child.setAttribute('data-pdf-annotate-type', annotation.type)
+      child.setAttribute('aria-hidden', true)
+
+      this.svg.appendChild(child)
+    }
+
+    return child
+  }
+
+  /**
    * Hook the annotator
    **/
   hook () {
