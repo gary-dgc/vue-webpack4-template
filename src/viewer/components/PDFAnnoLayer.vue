@@ -55,7 +55,7 @@ export default {
   computed: {
     wrapperAttrs () {
       const zIndex = !['highlight', 'strikeout'].includes(this.annoType) ? 20 : 10
-      console.log(this.annoType)
+
       return {
         style: `z-index: ${zIndex}`
       }

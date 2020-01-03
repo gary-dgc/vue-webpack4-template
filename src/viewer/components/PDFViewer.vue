@@ -111,7 +111,7 @@ export default {
     },
 
     annoAction (type) {
-      enableAnno(type)
+      enableAnno({ type })
     }
   }
 }
