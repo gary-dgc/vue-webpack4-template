@@ -13,6 +13,7 @@ export default class RectHandler {
     this.parent = parent
     this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId
+    this.getConfig = parent.getConfig
   }
 
   /**

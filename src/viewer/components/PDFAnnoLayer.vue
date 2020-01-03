@@ -113,7 +113,7 @@ export default {
         })
       })
     },
-    onAnnoEvent (type) {
+    onAnnoEvent ({ type, setting, data }) {
       this.annoType = type
     },
     onMouseDown (e) {

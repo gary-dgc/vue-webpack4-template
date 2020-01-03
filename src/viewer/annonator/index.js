@@ -13,6 +13,9 @@ export function removeAnnoEventListener () {
   EE.removeListener(...arguments)
 }
 
+/**
+ * The annotation information
+**/
 const AnnoInfo = {
   doc_id: '',
   anno_type: 'edit'
@@ -32,6 +35,9 @@ export function getAnnoInfo (key) {
   }
 }
 
+/**
+ * The annotators object holder
+**/
 const Annotators = {}
 export function getAnnonator ({ pageNumber, svg, viewport, callback } = {}) {
   let anno = Annotators[pageNumber]
@@ -43,11 +49,28 @@ export function getAnnonator ({ pageNumber, svg, viewport, callback } = {}) {
   return anno
 }
 
-export function enableAnno (type) {
+/**
+ * Enable annotator action type
+**/
+export function enableAnno ({ type } = {}) {
   AnnoInfo.anno_type = type
-  fireAnnoEvent('anno:enable', type)
+  fireAnnoEvent('anno:event', { type })
 }
 
+/**
+ * Config annotator with setting
+**/
+export function configAnno ({ setting, data } = {}) {
+  const config = {}
+  config[setting] = data
+  setAnnoInfo(config)
+  fireAnnoEvent('anno:event', { setting, data })
+}
+
+/**
+ * Annotator class, it defines page-level operation
+ *
+**/
 class Annonator {
   constructor ({ pageNumber, svg, viewport, callback } = {}) {
     this.pageNumber = pageNumber
@@ -68,60 +91,92 @@ class Annonator {
     }
   }
 
+  /**
+   * Get document id
+  **/
   getDocId () {
     return AnnoInfo.doc_id
+  }
+
+  /**
+   * Get document id
+  **/
+  getConfig (setting) {
+    return AnnoInfo[setting]
   }
 
   /**
    * area, highlight, strikeout
    *
   **/
-  enable (type) {
+  enable ({ type } = {}) {
+    if (!type) return
     this.type = type
     this.reset()
   }
 
+  /**
+   * Disable handler
+   **/
   disable () {
     this.handler = undefined
   }
 
+  /**
+   * Handle mouse-down
+   **/
   handleMousedown () {
     if (this.handler) {
       this.handler.handleMousedown(...arguments)
     }
   }
 
+  /**
+   * Handle mouse-move
+   **/
   handleMousemove () {
     if (this.handler) {
       this.handler.handleMousemove(...arguments)
     }
   }
 
+  /**
+   * Handle mouse-up
+   **/
   handleMouseup () {
     if (this.handler) {
       this.handler.handleMouseup(...arguments)
     }
   }
 
+  /**
+   * Handle key-up
+   **/
   handleKeyup () {
     if (this.handler) {
       this.handler.handleKeyup(...arguments)
     }
   }
 
+  /**
+   * Hook the annotator
+   **/
   hook () {
-    const _enableRef = function () {
+    const _eventRef = function () {
       this.enable(...arguments)
       this.callback(...arguments)
     }.bind(this)
 
-    addAnnoEventListener('anno:enable', _enableRef)
-    this._enableRef = _enableRef
+    addAnnoEventListener('anno:event', _eventRef)
+    this._eventRef = _eventRef
   }
 
+  /**
+   * Release the annotator
+   **/
   release () {
-    const { _enableRef } = this
-    removeAnnoEventListener('anno:enable', _enableRef)
+    const { _eventRef } = this
+    removeAnnoEventListener('anno:event', _eventRef)
     delete Annotators[this.pageNumber]
   }
 }
@@ -131,6 +186,7 @@ export default {
   getAnnoInfo,
   getAnnonator,
   enableAnno,
+  configAnno,
   fireAnnoEvent,
   addAnnoEventListener,
   removeAnnoEventListener
