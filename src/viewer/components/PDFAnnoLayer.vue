@@ -107,14 +107,19 @@ export default {
         // prepare the annonator
         this.annonator = getAnnonator({
           pageNumber: this.page.pageNumber,
-          viewport: this.viewport,
+          viewport: textViewport,
           svg: this.$refs['anno-layer'],
           callback: function () { this.onAnnoEvent(...arguments) }.bind(this)
         })
       })
     },
-    onAnnoEvent ({ type, setting, data }) {
-      this.annoType = type
+    onAnnoEvent ({ type, setting, data, anno }) {
+      if (type) {
+        this.annoType = type
+      }
+      if (anno) {
+        console.log(anno)
+      }
     },
     onMouseDown (e) {
       if (!this.annonator) return

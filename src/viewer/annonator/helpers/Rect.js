@@ -1,7 +1,7 @@
 
 import {
   BORDER_COLOR,
-  scaleDown,
+  // scaleDown,
   getSelectionRects
 } from './utils'
 
@@ -78,7 +78,8 @@ export default class RectHandler {
         }
       }))
     } else if (type === 'area' && this.overlay) {
-      const rect = this.svg.getBoundingClientRect()
+      const { svg } = this.parent
+      const rect = svg.getBoundingClientRect()
       this.saveRect(type, [{
         top: parseInt(this.overlay.style.top, 10) + rect.top,
         left: parseInt(this.overlay.style.left, 10) + rect.left,
@@ -117,9 +118,8 @@ export default class RectHandler {
  */
   saveRect (type, rects, color) {
     let annotation = null
-
-    const boundingRect = this.svg.getBoundingClientRect()
-    const { svg } = this.parent
+    const { svg, viewport } = this.parent
+    const boundingRect = svg.getBoundingClientRect()
     if (!color) {
       if (type === 'highlight') {
         color = 'FFFF00'
@@ -139,12 +139,16 @@ export default class RectHandler {
           offset = r.height / 2
         }
 
-        return scaleDown(svg, {
+        const rect = {
           y: (r.top + offset) - boundingRect.top,
           x: r.left - boundingRect.left,
           width: r.width,
           height: r.height
+        }
+        Object.keys(rect).forEach((key) => {
+          rect[key] = rect[key] / viewport.scale
         })
+        return rect
       }).filter((r) => r.width > 0 && r.height > 0 && r.x > -1 && r.y > -1)
     }
 
@@ -163,10 +167,7 @@ export default class RectHandler {
       annotation.height = rect.height
     }
 
-    const { pageNumber } = this.parent
-    const documentId = this.getDocId()
     // Add the annotation
-    console.log(`docId=${documentId} / pagenum=${pageNumber}`)
-    console.log(annotation)
+    this.parent.callback({ anno: annotation })
   }
 }
