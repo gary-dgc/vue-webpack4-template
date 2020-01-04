@@ -263,12 +263,15 @@ export function getMetadata (svg) {
  *
  * @return {Array} An Array of rects
  */
-export function getSelectionRects () {
+export function getSelectionRects (clear) {
   try {
     const selection = window.getSelection()
     const range = selection.getRangeAt(0)
     const rects = range.getClientRects()
 
+    if (clear) {
+      selection.removeAllRanges()
+    }
     if (rects.length > 0 &&
       rects[0].width > 0 &&
       rects[0].height > 0) {

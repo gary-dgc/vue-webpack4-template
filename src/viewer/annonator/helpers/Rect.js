@@ -4,7 +4,7 @@ import {
   setAttributes,
   getSelectionRects,
   normalizeColor
-} from './utils'
+} from './Utils'
 
 export default class RectHandler {
   constructor (parent) {
@@ -70,7 +70,7 @@ export default class RectHandler {
   handleMouseup (e) {
     let rects
     const type = this.getAnnoType()
-    if (['highlight', 'strikeout'].includes(type) && (rects = getSelectionRects())) {
+    if (['highlight', 'strikeout'].includes(type) && (rects = getSelectionRects(true))) {
       this.saveRect(type, [...rects].map((r) => {
         return {
           top: r.top,
@@ -120,7 +120,7 @@ export default class RectHandler {
    */
   saveRect (type, rects, color) {
     let annotation = null
-    const { svg, viewport } = this.parent
+    const { svg, viewport: { scale } } = this.parent
     const boundingRect = svg.getBoundingClientRect()
     if (!color) {
       if (type === 'highlight') {
@@ -147,9 +147,8 @@ export default class RectHandler {
           width: r.width,
           height: r.height
         }
-        console.log(viewport.scale)
         Object.keys(rect).forEach((key) => {
-          rect[key] = rect[key] / viewport.scale
+          rect[key] = rect[key] / scale
         })
         return rect
       }).filter((r) => r.width > 0 && r.height > 0 && r.x > -1 && r.y > -1)
@@ -194,6 +193,7 @@ export default class RectHandler {
       return group
     } if (a.type === 'strikeout') {
       const group = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+      const { viewport: { scale } } = this.parent
       setAttributes(group, {
         stroke: normalizeColor(a.color || '#f00'),
         strokeWidth: 1
@@ -203,10 +203,10 @@ export default class RectHandler {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
 
         setAttributes(line, {
-          x1: r.x,
-          y1: r.y,
-          x2: r.x + r.width,
-          y2: r.y
+          x1: Math.ceil(r.x * scale),
+          y1: Math.ceil(r.y * scale),
+          x2: Math.ceil((r.x + r.width) * scale),
+          y2: Math.ceil(r.y * scale)
         })
 
         group.appendChild(line)
@@ -229,12 +229,13 @@ export default class RectHandler {
    *
   */
   _createRect (r) {
+    const { viewport: { scale } } = this.parent
     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
     setAttributes(rect, {
-      x: r.x,
-      y: r.y,
-      width: r.width,
-      height: r.height
+      x: Math.ceil(r.x * scale),
+      y: Math.ceil(r.y * scale),
+      width: Math.ceil(r.width * scale),
+      height: Math.ceil(r.height * scale)
     })
     return rect
   }

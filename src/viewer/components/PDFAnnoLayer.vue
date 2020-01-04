@@ -95,7 +95,7 @@ export default {
         // prepare the annonator
         this.annonator = getAnnonator({
           pageNumber: this.page.pageNumber,
-          viewport: this.viewport,
+          viewport: textViewport,
           svg: this.$refs['anno-layer'],
           callback: function () { this.onAnnoEvent(...arguments) }.bind(this)
         })
@@ -128,7 +128,7 @@ export default {
 </script>
 
 <style>
-.anno-container, .anno-wrapper{
+.anno-container{
   position: absolute;
   left: 0;
   top: 0;
