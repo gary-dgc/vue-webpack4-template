@@ -3,7 +3,10 @@ import {
   BORDER_COLOR,
   setAttributes,
   getSelectionRects,
-  normalizeColor
+  normalizeColor,
+  scaleDown,
+  scaleUp,
+  uuid
 } from './Utils'
 
 export default class RectHandler {
@@ -33,10 +36,10 @@ export default class RectHandler {
 
     this.overlay = document.createElement('div')
     this.overlay.style.position = 'absolute'
-    this.overlay.style.top = `${this.originY - rect.top}px`
-    this.overlay.style.left = `${this.originX - rect.left}px`
-    this.overlay.style.border = `3px solid ${BORDER_COLOR}`
-    this.overlay.style.borderRadius = '3px'
+    this.overlay.style.top = `${Math.ceil(this.originY - rect.top)}px`
+    this.overlay.style.left = `${Math.ceil(this.originX - rect.left)}px`
+    this.overlay.style.border = `2px solid ${BORDER_COLOR}`
+    this.overlay.style.borderRadius = '2px'
 
     svg.parentNode.appendChild(this.overlay)
   }
@@ -132,6 +135,7 @@ export default class RectHandler {
 
     // Initialize the annotation
     annotation = {
+      anno_id: uuid(),
       type,
       color,
       rectangles: [...rects].map((r) => {
@@ -141,14 +145,11 @@ export default class RectHandler {
           offset = r.height / 2
         }
 
-        const rect = {
+        const rect = scaleDown(scale, {
           y: (r.top + offset) - boundingRect.top,
           x: r.left - boundingRect.left,
           width: r.width,
           height: r.height
-        }
-        Object.keys(rect).forEach((key) => {
-          rect[key] = rect[key] / scale
         })
         return rect
       }).filter((r) => r.width > 0 && r.height > 0 && r.x > -1 && r.y > -1)
@@ -183,7 +184,7 @@ export default class RectHandler {
       const group = document.createElementNS('http://www.w3.org/2000/svg', 'g')
       setAttributes(group, {
         fill: normalizeColor(a.color || '#ff0'),
-        fillOpacity: 0.2
+        fillOpacity: 0.3
       })
 
       a.rectangles.forEach((r) => {
@@ -196,18 +197,18 @@ export default class RectHandler {
       const { viewport: { scale } } = this.parent
       setAttributes(group, {
         stroke: normalizeColor(a.color || '#f00'),
-        strokeWidth: 1
+        strokeWidth: 2
       })
 
       a.rectangles.forEach((r) => {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-
-        setAttributes(line, {
-          x1: Math.ceil(r.x * scale),
-          y1: Math.ceil(r.y * scale),
-          x2: Math.ceil((r.x + r.width) * scale),
-          y2: Math.ceil(r.y * scale)
+        const attrs = scaleUp(scale, {
+          x1: r.x,
+          y1: r.y,
+          x2: (r.x + r.width),
+          y2: r.y
         })
+        setAttributes(line, attrs)
 
         group.appendChild(line)
       })
@@ -217,6 +218,7 @@ export default class RectHandler {
       const rect = this._createRect(a)
       setAttributes(rect, {
         stroke: normalizeColor(a.color || '#f00'),
+        strokeWeight: 2,
         fill: 'none'
       })
 
@@ -231,12 +233,13 @@ export default class RectHandler {
   _createRect (r) {
     const { viewport: { scale } } = this.parent
     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-    setAttributes(rect, {
-      x: Math.ceil(r.x * scale),
-      y: Math.ceil(r.y * scale),
-      width: Math.ceil(r.width * scale),
-      height: Math.ceil(r.height * scale)
+    const attrs = scaleUp(scale, {
+      x: r.x,
+      y: r.y,
+      width: r.width,
+      height: r.height
     })
+    setAttributes(rect, attrs)
     return rect
   }
 }

@@ -153,16 +153,15 @@ export function getAnnotationRect (svg, el) {
 /**
  * Adjust scale from normalized scale (100%) to rendered scale.
  *
- * @param {SVGElement} svg The SVG to gather metadata from
+ * @param {Number} scale The scale
  * @param {Object} rect A map of numeric values to scale
  * @return {Object} A copy of `rect` with values scaled up
  */
-export function scaleUp (svg, rect) {
+export function scaleUp (scale, rect) {
   const result = {}
-  const { viewport } = getMetadata(svg)
 
   Object.keys(rect).forEach((key) => {
-    result[key] = rect[key] * viewport.scale
+    result[key] = rect[key] * scale
   })
 
   return result
@@ -171,16 +170,15 @@ export function scaleUp (svg, rect) {
 /**
  * Adjust scale from rendered scale to a normalized scale (100%).
  *
- * @param {SVGElement} svg The SVG to gather metadata from
+ * @param {Number} scale The scale
  * @param {Object} rect A map of numeric values to scale
  * @return {Object} A copy of `rect` with values scaled down
  */
-export function scaleDown (svg, rect) {
+export function scaleDown (scale, rect) {
   const result = {}
-  const { viewport } = getMetadata(svg)
 
   Object.keys(rect).forEach((key) => {
-    result[key] = rect[key] / viewport.scale
+    result[key] = rect[key] / scale
   })
 
   return result
@@ -225,37 +223,6 @@ export function getOffset (el) {
   const rect = parentNode.getBoundingClientRect()
 
   return { offsetLeft: rect.left, offsetTop: rect.top }
-}
-
-// /**
-//  * Disable user ability to select text on page
-//  */
-// export function disableUserSelect () {
-//   if (!userSelectStyleSheet.parentNode) {
-//     document.head.appendChild(userSelectStyleSheet)
-//   }
-// }
-
-// /**
-//  * Enable user ability to select text on page
-//  */
-// export function enableUserSelect () {
-//   if (userSelectStyleSheet.parentNode) {
-//     userSelectStyleSheet.parentNode.removeChild(userSelectStyleSheet)
-//   }
-// }
-
-/**
- * Get the metadata for a SVG container
- *
- * @param {SVGElement} svg The SVG container to get metadata for
- */
-export function getMetadata (svg) {
-  return {
-    documentId: svg.getAttribute('data-pdf-annotate-document'),
-    pageNumber: parseInt(svg.getAttribute('data-pdf-annotate-page'), 10),
-    viewport: JSON.parse(svg.getAttribute('data-pdf-annotate-viewport'))
-  }
 }
 
 /**

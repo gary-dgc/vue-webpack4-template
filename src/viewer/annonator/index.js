@@ -176,7 +176,7 @@ class Annonator {
     // Skip appending/transforming if node doesn't exist.
     if (child) {
       // Set attributes
-      child.setAttribute('data-pdf-annotate-id', annotation.uuid)
+      child.setAttribute('data-pdf-annotate-id', annotation.anno_id)
       child.setAttribute('data-pdf-annotate-type', annotation.type)
       child.setAttribute('aria-hidden', true)
 

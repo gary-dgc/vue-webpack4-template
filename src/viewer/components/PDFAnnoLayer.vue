@@ -1,13 +1,15 @@
 <template>
   <div
-    class="anno-container"
+    class="annoContainer"
     @mousedown.left="onMouseDown($event)"
     @mouseup.left="onMouseUp($event)"
     @mousemove.left="onMouseMove($event)"
   >
     <svg
       ref="anno-layer"
+      class="annoLayer"
       v-bind="svgAttrs"
+      xmlns="http://www.w3.org/2000/svg"
     />
     <div
       ref="text-layer"
@@ -28,14 +30,10 @@ function floor (value, precision) {
 }
 
 export default {
-  name: 'PDFAnnoLayer',
+  name: 'AnnoLayer',
   props: {
     page: {
       type: Object, // instance of PDFPageProxy returned from pdf.getPage
-      required: true
-    },
-    scale: {
-      type: Number,
       required: true
     }
   },
@@ -43,7 +41,7 @@ export default {
     return {
       viewport: undefined,
       annotations: [],
-      listener: () => {},
+      scale: undefined,
       annoType: getAnnoInfo().anno_type
     }
   },
@@ -77,8 +75,8 @@ export default {
       const defaultViewport = this.viewport.clone({ scale: 1.0 })
       const textLayerDiv = this.$refs['text-layer']
 
-      const textLayerScale = floor(textLayerDiv.clientWidth / defaultViewport.width, 2)
-      const textViewport = this.page.getViewport({ scale: textLayerScale });
+      this.scale = floor(textLayerDiv.clientWidth / defaultViewport.width, 2)
+      const textViewport = this.page.getViewport({ scale: this.scale });
 
       [].slice.call(textLayerDiv.children).forEach((child) => {
         textLayerDiv.removeChild(child)
@@ -107,6 +105,7 @@ export default {
       }
       if (anno) {
         console.log(anno)
+        this.annotations.push(anno)
         this.annonator.render(anno)
       }
     },
@@ -128,7 +127,7 @@ export default {
 </script>
 
 <style>
-.anno-container{
+.annoContainer{
   position: absolute;
   left: 0;
   top: 0;
