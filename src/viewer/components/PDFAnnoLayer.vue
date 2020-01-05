@@ -1,16 +1,36 @@
 <template>
   <div
-    class="annoContainer"
+    class="anno-container"
     @mousedown.left="onMouseDown($event)"
     @mouseup.left="onMouseUp($event)"
     @mousemove.left="onMouseMove($event)"
+    @mouseleave.left="onMouseLeave($event)"
   >
     <svg
       ref="anno-layer"
       class="annoLayer"
       v-bind="svgAttrs"
       xmlns="http://www.w3.org/2000/svg"
-    />
+    >
+      <defs>
+        <marker
+          id="red-arrowhead"
+          viewBox="0 0 14 14"
+          refX="10"
+          refY="7"
+          markerUnits="strokeWidth"
+          markerWidth="6"
+          markerHeight="4"
+          orient="auto"
+        >
+          <path
+            d="M 5 7 L 0 0 L 14 7 L 0 14 L 5 7 z"
+            stroke="none"
+            fill="red"
+          />
+        </marker>
+      </defs>
+    </svg>
     <div
       ref="text-layer"
       class="textLayer"
@@ -119,15 +139,18 @@ export default {
     },
     onMouseMove (e) {
       if (!this.annonator) return
-
       this.annonator.handleMousemove(e)
+    },
+    onMouseLeave (e) {
+      if (!this.annonator) return
+      this.annonator.handleMouseleave(e)
     }
   }
 }
 </script>
 
 <style>
-.annoContainer{
+.anno-container{
   position: absolute;
   left: 0;
   top: 0;

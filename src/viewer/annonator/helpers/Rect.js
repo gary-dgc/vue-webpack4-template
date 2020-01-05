@@ -56,12 +56,19 @@ export default class RectHandler {
     const { svg } = this.parent
     const rect = svg.getBoundingClientRect()
 
-    if (this.originX + (e.clientX - this.originX) < rect.right) {
-      this.overlay.style.width = `${e.clientX - this.originX}px`
-    }
+    const diff = { x: e.clientX - this.originX, y: e.clientY - this.originY }
 
-    if (this.originY + (e.clientY - this.originY) < rect.bottom) {
-      this.overlay.style.height = `${e.clientY - this.originY}px`
+    if (diff.x >= 0 && this.originX + diff.x < rect.right) {
+      this.overlay.style.width = `${diff.x}px`
+    } else if (diff.x < 0 && this.originX + diff.x > rect.left) {
+      this.overlay.style.left = `${Math.ceil(e.clientX - rect.left)}px`
+      this.overlay.style.width = `${-1 * diff.x}px`
+    }
+    if (diff.y >= 0 && this.originY + diff.y < rect.bottom) {
+      this.overlay.style.height = `${diff.y}px`
+    } else if (diff.y < 0 && this.originY + diff.y > rect.top) {
+      this.overlay.style.top = `${Math.ceil(e.clientY - rect.top)}px`
+      this.overlay.style.height = `${-1 * diff.y}px`
     }
   }
 
@@ -112,6 +119,15 @@ export default class RectHandler {
         this.overlay = null
       }
     }
+  }
+
+  /**
+   * Handle mouse leave event
+   *
+   * @param {Event} e The DOM event to handle
+   */
+  handleMouseleave (e) {
+    this.handleMouseup(e)
   }
 
   /**
@@ -180,6 +196,7 @@ export default class RectHandler {
    * @param {Event} e The DOM event to handle
    */
   render (a) {
+    const offset = { x: 1, y: 1 }
     if (a.type === 'highlight') {
       const group = document.createElementNS('http://www.w3.org/2000/svg', 'g')
       setAttributes(group, {
@@ -188,7 +205,7 @@ export default class RectHandler {
       })
 
       a.rectangles.forEach((r) => {
-        group.appendChild(this._createRect(r))
+        group.appendChild(this._createRect(r, offset))
       })
 
       return group
@@ -204,9 +221,9 @@ export default class RectHandler {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
         const attrs = scaleUp(scale, {
           x1: r.x,
-          y1: r.y,
+          y1: r.y + offset.y,
           x2: (r.x + r.width),
-          y2: r.y
+          y2: r.y + offset.y
         })
         setAttributes(line, attrs)
 
@@ -215,10 +232,12 @@ export default class RectHandler {
 
       return group
     } else {
-      const rect = this._createRect(a)
+      offset.width = 1
+      offset.height = 1
+      const rect = this._createRect(a, offset)
       setAttributes(rect, {
         stroke: normalizeColor(a.color || '#f00'),
-        strokeWeight: 2,
+        strokeWidth: 2,
         fill: 'none'
       })
 
@@ -230,15 +249,22 @@ export default class RectHandler {
    * create rect dom el
    *
   */
-  _createRect (r) {
+  _createRect (r, offset) {
     const { viewport: { scale } } = this.parent
     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-    const attrs = scaleUp(scale, {
+    let attrs = {
       x: r.x,
       y: r.y,
       width: r.width,
       height: r.height
-    })
+    }
+
+    if (offset) {
+      Object.keys(attrs).forEach((key) => {
+        attrs[key] = attrs[key] + (offset[key] ? offset[key] : 0)
+      })
+    }
+    attrs = scaleUp(scale, attrs)
     setAttributes(rect, attrs)
     return rect
   }

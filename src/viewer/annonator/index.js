@@ -152,6 +152,15 @@ class Annonator {
   /**
    * Handle key-up
    **/
+  handleMouseleave () {
+    if (this.handler) {
+      this.handler.handleMouseleave(...arguments)
+    }
+  }
+
+  /**
+   * Handle key-up
+   **/
   handleKeyup () {
     if (this.handler) {
       this.handler.handleKeyup(...arguments)
