@@ -1,5 +1,6 @@
 import EventEmitter from 'events'
 import Rect from './helpers/Rect.js'
+import Edit from './helpers/Edit.js'
 import adapter from './adapter'
 
 import { setAnnoInfo, getAnnoInfo } from './Config.js'
@@ -59,14 +60,17 @@ class Annonator {
     this.viewport = viewport
     this._callback = callback
     this.helpers = {}
+    this.helpers.rect = new Rect(this)
+    this.helpers.edit = new Edit(this)
     this.reset()
     this.hook()
   }
 
   reset () {
-    this.helpers.rect = new Rect(this)
     if (['highlight', 'strikeout', 'area'].includes(this.type)) {
       this.handler = this.helpers.rect
+    } else if (['edit'].includes(this.type)) {
+      this.handler = this.helpers.edit
     } else {
       this.handler = undefined
     }
@@ -185,6 +189,7 @@ class Annonator {
     if (['anno:add'].includes(type)) {
       adapter.addAnnotation(this.getDocId(), this.pageNumber, data)
     }
+    // let's forward the data to ui component
     this._callback(...arguments)
   }
 
@@ -193,8 +198,7 @@ class Annonator {
    **/
   hook () {
     const _eventRef = function () {
-      const { type } = arguments[0]
-      console.log(arguments)
+      const { type } = arguments[0] || {}
       if (['highlight', 'strikeout', 'area'].includes(type)) {
         this.enable({ type })
       }
