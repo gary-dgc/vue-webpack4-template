@@ -1,3 +1,5 @@
+import adapter from '../adapter'
+
 export default class EditHandler {
   constructor (parent) {
     this.overlay = undefined
@@ -20,7 +22,10 @@ export default class EditHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMousemove (e) {
-    console.log(e)
+    const { pageNumber } = this.parent
+    adapter.getAnnotations(this.getDocId(), pageNumber).then(data => {
+      console.log(data)
+    })
   }
 
   /**

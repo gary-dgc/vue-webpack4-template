@@ -151,7 +151,7 @@ export default class RectHandler {
 
     // Initialize the annotation
     annotation = {
-      anno_id: uuid(),
+      uuid: uuid(),
       type,
       color,
       rectangles: [...rects].map((r) => {

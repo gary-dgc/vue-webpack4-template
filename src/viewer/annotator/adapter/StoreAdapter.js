@@ -1,4 +1,4 @@
-import { uuid } from '../helpers/Utils.js'
+import { uuid } from '../helpers/Utils'
 // Adapter should never be invoked publicly
 export default class StoreAdapter {
   getAllAnnotations (documentId) {

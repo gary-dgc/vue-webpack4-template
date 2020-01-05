@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { setDocInfo, enableAnno } from '../annonator'
+import { setDocInfo, enableAnno } from '../annotator'
 import PDFDocument from './PDFDocument.vue'
 import PDFToolbar from './PDFToolbar.vue'
 import PDFData from './PDFData.vue'

@@ -41,7 +41,7 @@
 
 <script>
 import pdfjsLib from 'pdfjs-dist/webpack.js'
-import { getAnnonator, getAnnoInfo } from '../annonator'
+import { getAnnotator, getAnnoInfo } from '../annotator'
 import { PIXEL_RATIO } from '../utils/constants'
 
 function floor (value, precision) {
@@ -111,12 +111,13 @@ export default {
 
         textLayer._render()
         // prepare the annonator
-        this.annonator = getAnnonator({
+        this.annonator = getAnnotator({
           pageNumber: this.page.pageNumber,
           viewport: textViewport,
           svg: this.$refs['anno-layer'],
           callback: function () { this.onAnnoEvent(...arguments) }.bind(this)
         })
+        this.annoType = this.annonator.type
       })
     },
     onAnnoEvent ({ type, setting, data }) {

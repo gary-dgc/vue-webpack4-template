@@ -1,4 +1,4 @@
-import StoreAdapter from './StoreAdapter.js'
+import StoreAdapter from './StoreAdapter'
 
 const Adapter = new StoreAdapter()
 

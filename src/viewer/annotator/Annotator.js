@@ -1,9 +1,9 @@
 import EventEmitter from 'events'
-import Rect from './helpers/Rect.js'
-import Edit from './helpers/Edit.js'
+import Rect from './helpers/Rect'
+import Edit from './helpers/Edit'
 import adapter from './adapter'
 
-import { setAnnoInfo, getAnnoInfo } from './Config.js'
+import { setAnnoInfo, getAnnoInfo } from './Config'
 
 const EE = new EventEmitter()
 
@@ -21,11 +21,11 @@ export function removeAnnoEventListener () {
  * The annotators object holder
 **/
 const Annotators = {}
-export function getAnnonator ({ pageNumber, svg, viewport, callback } = {}) {
+export function getAnnotator ({ pageNumber, svg, viewport, callback } = {}) {
   let anno = Annotators[pageNumber]
   if (!pageNumber) return
   if (!anno) {
-    anno = new Annonator({ pageNumber, svg, viewport, callback })
+    anno = new Annotator({ pageNumber, svg, viewport, callback })
     Annotators[pageNumber] = anno
   }
   return anno
@@ -53,12 +53,13 @@ export function configAnno ({ setting, data } = {}) {
  * Annotator class, it defines page-level operation
  *
 **/
-class Annonator {
+class Annotator {
   constructor ({ pageNumber, svg, viewport, callback } = {}) {
     this.pageNumber = pageNumber
     this.svg = svg
     this.viewport = viewport
     this._callback = callback
+    this.type = getAnnoInfo('anno_type')
     this.helpers = {}
     this.helpers.rect = new Rect(this)
     this.helpers.edit = new Edit(this)
@@ -170,8 +171,9 @@ class Annonator {
     // Skip appending/transforming if node doesn't exist.
     if (child) {
       // Set attributes
-      child.setAttribute('data-pdf-annotate-id', annotation.anno_id)
+      child.setAttribute('data-pdf-annotate-id', annotation.uuid)
       child.setAttribute('data-pdf-annotate-type', annotation.type)
+      child.setAttribute('data-pdf-page', this.pageNumber)
       child.setAttribute('aria-hidden', true)
 
       this.svg.appendChild(child)
