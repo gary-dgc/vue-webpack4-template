@@ -1,4 +1,4 @@
-
+import { uuid } from '../helpers/Utils.js'
 // Adapter should never be invoked publicly
 export default class StoreAdapter {
   getAllAnnotations (documentId) {
@@ -20,7 +20,7 @@ export default class StoreAdapter {
   }
 
   getAnnotation (documentId, annotationId) {
-    return Promise.resolve(this.getAnnotations(documentId)[findAnnotation(documentId, annotationId)])
+    return Promise.resolve(this.getAnnotations(documentId)[this.findAnnotation(documentId, annotationId)])
   }
 
   addAnnotation (documentId, pageNumber, annotation) {

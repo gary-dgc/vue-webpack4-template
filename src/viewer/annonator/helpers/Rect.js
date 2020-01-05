@@ -187,7 +187,7 @@ export default class RectHandler {
     }
 
     // Add the annotation
-    this.parent.callback({ anno: annotation })
+    this.parent.callback({ type: 'anno:add', data: annotation })
   }
 
   /**

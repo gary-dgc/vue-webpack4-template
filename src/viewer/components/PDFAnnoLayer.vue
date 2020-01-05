@@ -119,14 +119,14 @@ export default {
         })
       })
     },
-    onAnnoEvent ({ type, setting, data, anno }) {
-      if (type) {
+    onAnnoEvent ({ type, setting, data }) {
+      if (['highlight', 'strikeout', 'area'].includes(type)) {
         this.annoType = type
       }
-      if (anno) {
-        console.log(anno)
-        this.annotations.push(anno)
-        this.annonator.render(anno)
+      if (data) {
+        console.log(data)
+        this.annotations.push(data)
+        this.annonator.render(data)
       }
     },
     onMouseDown (e) {
