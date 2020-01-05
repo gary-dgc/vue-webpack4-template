@@ -61,6 +61,7 @@ export default {
     return {
       viewport: undefined,
       annotations: [],
+      active: {},
       scale: undefined,
       annoType: getAnnoInfo().anno_type
     }
@@ -121,13 +122,17 @@ export default {
       })
     },
     onAnnoEvent ({ type, setting, data }) {
-      if (['highlight', 'strikeout', 'area'].includes(type)) {
+      if (['highlight', 'strikeout', 'area', 'edit'].includes(type)) {
         this.annoType = type
-      }
-      if (data) {
+      } else if (type === 'anno:add') {
         console.log(data)
         this.annotations.push(data)
         this.annonator.render(data)
+      } else if (type === 'anno:focus') {
+        this.active = data
+        console.log(data)
+      } else if (type === 'anno:blur') {
+        this.active = {}
       }
     },
     onMouseDown (e) {

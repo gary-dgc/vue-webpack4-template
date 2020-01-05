@@ -8,7 +8,10 @@ import {
   scaleUp,
   uuid
 } from './Utils'
-
+/**
+ *
+ * trigger event: anno:add
+**/
 export default class RectHandler {
   constructor (parent) {
     this.overlay = undefined

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { setDocInfo, enableAnno } from '../annotator'
+import { setAnnoInfo, enableAnno } from '../annotator'
 import PDFDocument from './PDFDocument.vue'
 import PDFToolbar from './PDFToolbar.vue'
 import PDFData from './PDFData.vue'
@@ -72,11 +72,12 @@ export default {
   watch: {
     url () {
       this.currentPage = undefined
-      setDocInfo({ doc_id: 'D0101012' })
+      console.log('sdfsdf')
     }
   },
 
   mounted () {
+    setAnnoInfo({ doc_id: 'D0101012' })
     document.body.classList.add('overflow-hidden')
   },
 

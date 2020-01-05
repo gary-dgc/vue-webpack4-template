@@ -65,6 +65,7 @@ class Annotator {
     this.helpers.edit = new Edit(this)
     this.reset()
     this.hook()
+    this.render()
   }
 
   reset () {
@@ -153,11 +154,25 @@ class Annotator {
     }
   }
 
+  render (annotation) {
+    if (annotation) {
+      this.renderAnno(annotation)
+    } else {
+      adapter.getAnnotations(this.getDocId(), this.pageNumber)
+        .then(data => {
+          const { annotations } = data
+          annotations.forEach(a => {
+            this.renderAnno(a)
+          })
+        })
+    }
+  }
+
   /**
    * Render the annotation
    * @param {Annotation} annotation data
   */
-  render (annotation) {
+  renderAnno (annotation) {
     let child
     switch (annotation.type) {
       case 'area':
@@ -201,7 +216,7 @@ class Annotator {
   hook () {
     const _eventRef = function () {
       const { type } = arguments[0] || {}
-      if (['highlight', 'strikeout', 'area'].includes(type)) {
+      if (['highlight', 'strikeout', 'area', 'edit'].includes(type)) {
         this.enable({ type })
       }
       this.callback(...arguments)
