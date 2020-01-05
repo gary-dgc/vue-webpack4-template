@@ -69,7 +69,6 @@ export default {
   computed: {
     svgAttrs () {
       if (!this.viewport) return {}
-
       const { width, height } = this.viewport
       const [pixelWidth, pixelHeight] = [width, height].map(dim => Math.ceil(dim / PIXEL_RATIO))
       return {
@@ -86,8 +85,8 @@ export default {
     }
   },
   destroyed () {
-    if (this.annonator) {
-      this.annonator.release()
+    if (this.annotator) {
+      this.annotator.release()
     }
   },
   methods: {
@@ -111,23 +110,23 @@ export default {
         })
 
         textLayer._render()
-        // prepare the annonator
-        this.annonator = getAnnotator({
+        // prepare the annotator
+        this.annotator = getAnnotator({
           pageNumber: this.page.pageNumber,
           viewport: textViewport,
           svg: this.$refs['anno-layer'],
           callback: function () { this.onAnnoEvent(...arguments) }.bind(this)
         })
-        this.annoType = this.annonator.type
+        this.annotator.render()
+        this.annoType = this.annotator.type
       })
     },
     onAnnoEvent ({ type, setting, data }) {
       if (['highlight', 'strikeout', 'area', 'edit'].includes(type)) {
         this.annoType = type
       } else if (type === 'anno:add') {
-        console.log(data)
         this.annotations.push(data)
-        this.annonator.render(data)
+        this.annotator.render(data)
       } else if (type === 'anno:focus') {
         this.active = data
       } else if (type === 'anno:blur') {
@@ -136,20 +135,20 @@ export default {
       }
     },
     onMouseDown (e) {
-      if (!this.annonator) return
-      this.annonator.handleMousedown(e)
+      if (!this.annotator) return
+      this.annotator.handleMousedown(e)
     },
     onMouseUp (e) {
-      if (!this.annonator) return
-      this.annonator.handleMouseup(e)
+      if (!this.annotator) return
+      this.annotator.handleMouseup(e)
     },
     onMouseMove (e) {
-      if (!this.annonator) return
-      this.annonator.handleMousemove(e)
+      if (!this.annotator) return
+      this.annotator.handleMousemove(e)
     },
     onMouseLeave (e) {
-      if (!this.annonator) return
-      this.annonator.handleMouseleave(e)
+      if (!this.annotator) return
+      this.annotator.handleMouseleave(e)
     }
   }
 }

@@ -1,3 +1,6 @@
+<template>
+  <div class="anno-edit" />
+</template>
 <script>
 export default {
   name: 'Anno',
@@ -22,3 +25,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.anno-edit{
+  border: 2px solid red;
+}
+</style>

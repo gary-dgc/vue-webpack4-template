@@ -27,6 +27,9 @@ export function getAnnotator ({ pageNumber, svg, viewport, callback } = {}) {
   if (!anno) {
     anno = new Annotator({ pageNumber, svg, viewport, callback })
     Annotators[pageNumber] = anno
+  } else {
+    anno.svg = svg
+    anno.viewport = viewport
   }
   return anno
 }
@@ -65,7 +68,6 @@ class Annotator {
     this.helpers.edit = new Edit(this)
     this.reset()
     this.hook()
-    this.render()
   }
 
   reset () {
@@ -174,6 +176,7 @@ class Annotator {
   */
   renderAnno (annotation) {
     let child
+    this._removeAnno(annotation)
     switch (annotation.type) {
       case 'area':
       case 'highlight':
@@ -195,6 +198,16 @@ class Annotator {
     }
 
     return child
+  }
+
+  /**
+   * Remove the annotation dom element
+  **/
+  _removeAnno (annotation) {
+    const elms = this.svg.querySelectorAll("[data-pdf-annotate-id='" + annotation.uuid + "']")
+    elms.forEach(elm => {
+      this.svg.removeChild(elm)
+    })
   }
 
   /**
