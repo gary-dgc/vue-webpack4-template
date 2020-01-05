@@ -34,19 +34,23 @@
     <div style="flex: 1 1 auto; display: flex; margin-left: 10px">
       <a
         class="icon"
-        @click.prevent.stop="annoAction('edit')"
+        :class="{active: action === 'edit'}"
+        @click.prevent.stop="doAction('edit')"
       >E</a>
       <a
         class="icon"
-        @click.prevent.stop="annoAction('area')"
+        :class="{active: action === 'area'}"
+        @click.prevent.stop="doAction('area')"
       >A</a>
       <a
         class="icon"
-        @click.prevent.stop="annoAction('highlight')"
+        :class="{active: action === 'highlight'}"
+        @click.prevent.stop="doAction('highlight')"
       >H</a>
       <a
         class="icon"
-        @click.prevent.stop="annoAction('strikeout')"
+        :class="{active: action === 'strikeout'}"
+        @click.prevent.stop="doAction('strikeout')"
       >S</a>
     </div>
   </div>
@@ -82,6 +86,11 @@ export default {
       default: 0.25
     }
   },
+  data () {
+    return {
+      action: 'edit'
+    }
+  },
   methods: {
     jumpPage (event) {
       this.updateCurrentPage(parseInt(event.target.value, 10))
@@ -99,6 +108,10 @@ export default {
 
     fitAuto () {
       this.updateFit('auto')
+    },
+    doAction (action) {
+      this.action = action
+      this.annoAction(action)
     }
   }
 }
@@ -124,5 +137,8 @@ export default {
 .pdf-paginator input {
   width: 2em;
   padding: 0.3em;
+}
+a.icon.active{
+  background-color:#d4d4d4;
 }
 </style>

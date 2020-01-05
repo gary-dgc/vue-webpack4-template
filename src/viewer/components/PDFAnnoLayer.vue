@@ -130,9 +130,9 @@ export default {
         this.annonator.render(data)
       } else if (type === 'anno:focus') {
         this.active = data
-        console.log(data)
       } else if (type === 'anno:blur') {
         this.active = {}
+        console.log('blur')
       }
     },
     onMouseDown (e) {
