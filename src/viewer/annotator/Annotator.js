@@ -158,13 +158,13 @@ class Annotator {
 
   render (annotation) {
     if (annotation) {
-      this.renderAnno(annotation)
+      this._renderAnno(annotation)
     } else {
       adapter.getAnnotations(this.getDocId(), this.pageNumber)
         .then(data => {
           const { annotations } = data
           annotations.forEach(a => {
-            this.renderAnno(a)
+            this._renderAnno(a)
           })
         })
     }
@@ -174,7 +174,7 @@ class Annotator {
    * Render the annotation
    * @param {Annotation} annotation data
   */
-  renderAnno (annotation) {
+  _renderAnno (annotation) {
     let child
     this._removeAnno(annotation)
     switch (annotation.type) {
@@ -207,6 +207,16 @@ class Annotator {
     const elms = this.svg.querySelectorAll('[data-pdf-annotate-id]')
     elms.forEach(elm => {
       this.svg.removeChild(elm)
+    })
+  }
+
+  /**
+   * Show or hide annotation element
+  **/
+  show (annotationId, visible) {
+    const elms = this.svg.querySelectorAll("[data-pdf-annotate-id='" + annotationId + "']")
+    elms.forEach(elm => {
+      elm.style.visibility = visible ? 'visible' : 'hidden'
     })
   }
 

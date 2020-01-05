@@ -1,9 +1,12 @@
 <template>
-  <div class="anno-edit" />
+  <div
+    class="anno-edit"
+    :style="style"
+  />
 </template>
 <script>
 export default {
-  name: 'Anno',
+  name: 'AnnoEdit',
   props: {
     scale: {
       type: Number,
@@ -12,14 +15,29 @@ export default {
     data: {
       type: Object,
       default: () => {}
+    },
+    annotator: {
+      type: Object,
+      default: () => {}
     }
   },
-
-  data () {
-    return {
+  computed: {
+    style () {
+      const { x, y, width, height } = this.data
+      return {
+        top: `${y}px`,
+        left: `${x}px`,
+        width: `${width}px`,
+        height: `${height}px`
+      }
     }
   },
-
+  destroyed () {
+    this.annotator.show(this.data.uuid, true)
+  },
+  mounted () {
+    this.annotator.show(this.data.uuid, false)
+  },
   methods: {
 
   }
@@ -27,6 +45,8 @@ export default {
 </script>
 <style scoped>
 .anno-edit{
-  border: 2px solid red;
+  position: absolute;
+  border: 2px dashed gray;
+
 }
 </style>

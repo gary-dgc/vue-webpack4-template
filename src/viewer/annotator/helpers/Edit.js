@@ -1,6 +1,7 @@
 import adapter from '../adapter'
 import {
-  scaleDown
+  scaleDown,
+  scaleUp
 } from './Utils'
 /**
  *
@@ -64,9 +65,10 @@ export default class EditHandler {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
     })
-    if (this.current.uuid && this.checkRange(this.current, rpos)) {
+    if (this.current.uuid && this._checkRange(this.current, rpos)) {
       // found still in current anno
-      this.parent.callback({ type: 'anno:focus', data: this.current })
+      const data = this.calcAnnoRange(this.current)
+      this.parent.callback({ type: 'anno:focus', data })
       return
     } else {
       this.current = {} // reset current
@@ -75,7 +77,7 @@ export default class EditHandler {
       const { annotations } = data
 
       annotations.some(annotation => {
-        const found = this.checkRange(annotation, rpos)
+        const found = this._checkRange(annotation, rpos)
         if (found) {
           this.current = annotation
         }
@@ -83,7 +85,8 @@ export default class EditHandler {
         return found
       })
       if (this.current.uuid) {
-        this.parent.callback({ type: 'anno:focus', data: this.current })
+        const data = this.calcAnnoRange(this.current)
+        this.parent.callback({ type: 'anno:focus', data })
       } else {
         this.parent.callback({ type: 'anno:blur', data: this.current })
       }
@@ -94,7 +97,7 @@ export default class EditHandler {
    * Check range in or out
    * return: true - found; false - unfound
   */
-  checkRange (annotation, rpos) {
+  _checkRange (annotation, rpos) {
     const { type, rectangles, x, y, width, height } = annotation
     let found = false
     if (['highlight', 'strikeout'].includes(type)) {
@@ -118,5 +121,51 @@ export default class EditHandler {
       }
     }
     return found
+  }
+
+  /**
+   * Calculate annotation ui range
+   *
+  **/
+  calcAnnoRange (annotation) {
+    const { viewport: { scale } } = this.parent
+    const { type, rectangles, x, y, width, height } = annotation
+    let rect = { x: 0, y: 0, width: 0, height: 0 }
+    if (['highlight', 'strikeout'].includes(type)) {
+      rectangles.forEach(r => {
+        if (rect.x === 0 || rect.x > r.x) {
+          rect.x = r.x
+          rect.width += (rect.x - r.x) > 0 ? rect.x > r.x : 0
+        }
+
+        if (rect.y === 0 || rect.y > r.y) {
+          rect.y = r.y
+          rect.height += (rect.y - r.y) > 0 ? rect.y - r.y : 0
+        }
+
+        if (rect.width === 0) {
+          rect.width = r.width
+        } else if (rect.x + rect.width > r.x + r.width) {
+          rect.width = r.x + r.width - rect.x
+        }
+
+        if (rect.height === 0) {
+          rect.height = r.height
+        } else if (rect.y + rect.height > r.y + r.height) {
+          rect.height = r.y + r.height - rect.y
+        }
+      })
+    } else if (['area'].includes(type)) {
+      rect.x = x
+      rect.y = y
+      rect.width = width
+      rect.height = height
+    }
+
+    rect = scaleUp(scale, rect)
+    rect.uuid = annotation.uuid
+    rect.type = annotation.type
+
+    return rect
   }
 }

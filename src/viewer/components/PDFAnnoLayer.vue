@@ -36,6 +36,12 @@
       class="textLayer"
       v-bind="textAttrs"
     />
+    <PDFAnno
+      v-if="active.uuid"
+      :data="active"
+      :annotator="annotator"
+      :scale="scale"
+    />
   </div>
 </template>
 
@@ -43,7 +49,7 @@
 import pdfjsLib from 'pdfjs-dist/webpack.js'
 import { getAnnotator, getAnnoInfo } from '../annotator'
 import { PIXEL_RATIO } from '../utils/constants'
-
+import PDFAnno from './PDFAnno'
 function floor (value, precision) {
   const multiplier = Math.pow(10, precision || 0)
   return Math.floor(value * multiplier) / multiplier
@@ -51,6 +57,9 @@ function floor (value, precision) {
 
 export default {
   name: 'AnnoLayer',
+  components: {
+    PDFAnno
+  },
   props: {
     page: {
       type: Object, // instance of PDFPageProxy returned from pdf.getPage
@@ -63,7 +72,8 @@ export default {
       annotations: [],
       active: {},
       scale: undefined,
-      annoType: getAnnoInfo().anno_type
+      annoType: getAnnoInfo().anno_type,
+      annotator: undefined
     }
   },
   computed: {
