@@ -96,8 +96,10 @@ export default {
       const textLayerDiv = this.$refs['text-layer']
 
       this.scale = floor(textLayerDiv.clientWidth / defaultViewport.width, 2)
-      const textViewport = this.page.getViewport({ scale: this.scale });
-
+      const textViewport = this.page.getViewport({ scale: this.scale })
+      if (this.annotator) {
+        this.annotator.remove()
+      }
       [].slice.call(textLayerDiv.children).forEach((child) => {
         textLayerDiv.removeChild(child)
       })
@@ -131,7 +133,6 @@ export default {
         this.active = data
       } else if (type === 'anno:blur') {
         this.active = {}
-        console.log('blur')
       }
     },
     onMouseDown (e) {
