@@ -3,7 +3,11 @@
 **/
 const AnnoInfo = {
   doc_id: '',
-  anno_type: 'edit'
+  anno_type: 'edit',
+  pen: {
+    size: 3,
+    color: '#DDDDDD'
+  }
 }
 
 export function setAnnoInfo (info = {}) {

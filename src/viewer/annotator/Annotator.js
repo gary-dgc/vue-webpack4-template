@@ -1,6 +1,7 @@
 import EventEmitter from 'events'
 import Rect from './helpers/Rect'
 import Edit from './helpers/Edit'
+import Pen from './helpers/Pen'
 import adapter from './adapter'
 
 import { setAnnoInfo, getAnnoInfo } from './Config'
@@ -66,6 +67,7 @@ class Annotator {
     this.helpers = {}
     this.helpers.rect = new Rect(this)
     this.helpers.edit = new Edit(this)
+    this.helpers.drawing = new Pen(this)
     this.reset()
     this.hook()
   }
@@ -75,6 +77,8 @@ class Annotator {
       this.handler = this.helpers.rect
     } else if (['edit'].includes(this.type)) {
       this.handler = this.helpers.edit
+    } else if (['drawing'].includes(this.type)) {
+      this.handler = this.helpers.drawing
     } else {
       this.handler = undefined
     }
@@ -115,7 +119,7 @@ class Annotator {
    * Handle mouse-down
    **/
   handleMousedown () {
-    if (this.handler) {
+    if (this.handler && this.handler.handleMousedown) {
       this.handler.handleMousedown(...arguments)
     }
   }
@@ -124,7 +128,7 @@ class Annotator {
    * Handle mouse-move
    **/
   handleMousemove () {
-    if (this.handler) {
+    if (this.handler && this.handler.handleMousemove) {
       this.handler.handleMousemove(...arguments)
     }
   }
@@ -133,7 +137,7 @@ class Annotator {
    * Handle mouse-up
    **/
   handleMouseup () {
-    if (this.handler) {
+    if (this.handler && this.handler.handleMouseup) {
       this.handler.handleMouseup(...arguments)
     }
   }
@@ -142,7 +146,7 @@ class Annotator {
    * Handle key-up
    **/
   handleMouseleave () {
-    if (this.handler) {
+    if (this.handler && this.handler.handleMouseleave) {
       this.handler.handleMouseleave(...arguments)
     }
   }
@@ -151,14 +155,20 @@ class Annotator {
    * Handle key-up
    **/
   handleKeyup () {
-    if (this.handler) {
+    if (this.handler && this.handler.handleKeyup) {
       this.handler.handleKeyup(...arguments)
     }
   }
 
+  /**
+   * Render the annotations
+   * @param {Annotation} annotation data if null, find all page-level ones
+   *                     to render
+   *
+  **/
   render (annotation) {
     if (annotation) {
-      this._renderAnno(annotation)
+      return this._renderAnno(annotation)
     } else {
       adapter.getAnnotations(this.getDocId(), this.pageNumber)
         .then(data => {
@@ -182,6 +192,9 @@ class Annotator {
       case 'highlight':
       case 'strikeout':
         child = this.helpers.rect.render(annotation)
+        break
+      case 'drawing':
+        child = this.helpers.drawing.render(annotation)
         break
     }
 
@@ -211,22 +224,22 @@ class Annotator {
   }
 
   /**
-   * Show or hide annotation element
-  **/
-  show (annotationId, visible) {
-    const elms = this.svg.querySelectorAll("[data-pdf-annotate-id='" + annotationId + "']")
-    elms.forEach(elm => {
-      elm.style.visibility = visible ? 'visible' : 'hidden'
-    })
-  }
-
-  /**
    * Remove the annotation dom element
   **/
   _removeAnno (annotation) {
     const elms = this.svg.querySelectorAll("[data-pdf-annotate-id='" + annotation.uuid + "']")
     elms.forEach(elm => {
       this.svg.removeChild(elm)
+    })
+  }
+
+  /**
+   * Show or hide annotation element
+  **/
+  show (annotationId, visible) {
+    const elms = this.svg.querySelectorAll("[data-pdf-annotate-id='" + annotationId + "']")
+    elms.forEach(elm => {
+      elm.style.visibility = visible ? 'visible' : 'hidden'
     })
   }
 

@@ -62,14 +62,18 @@ export default class RectHandler {
     const diff = { x: e.clientX - this.originX, y: e.clientY - this.originY }
 
     if (diff.x >= 0 && this.originX + diff.x < rect.right) {
+      // bottom + right moving
       this.overlay.style.width = `${diff.x}px`
     } else if (diff.x < 0 && this.originX + diff.x > rect.left) {
+      // top + left moving
       this.overlay.style.left = `${Math.ceil(e.clientX - rect.left)}px`
       this.overlay.style.width = `${-1 * diff.x}px`
     }
     if (diff.y >= 0 && this.originY + diff.y < rect.bottom) {
+      // bottom + right moving
       this.overlay.style.height = `${diff.y}px`
     } else if (diff.y < 0 && this.originY + diff.y > rect.top) {
+      // top + left moving
       this.overlay.style.top = `${Math.ceil(e.clientY - rect.top)}px`
       this.overlay.style.height = `${-1 * diff.y}px`
     }

@@ -52,6 +52,11 @@
         :class="{active: action === 'strikeout'}"
         @click.prevent.stop="doAction('strikeout')"
       >S</a>
+      <a
+        class="icon"
+        :class="{active: action === 'drawing'}"
+        @click.prevent.stop="doAction('drawing')"
+      >D</a>
     </div>
   </div>
 </template>

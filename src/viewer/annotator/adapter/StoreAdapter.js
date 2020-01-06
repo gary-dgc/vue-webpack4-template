@@ -26,7 +26,9 @@ export default class StoreAdapter {
   addAnnotation (documentId, pageNumber, annotation) {
     return new Promise((resolve, reject) => {
       annotation.class = 'Annotation'
-      annotation.uuid = uuid()
+      if (!annotation.uuid) {
+        annotation.uuid = uuid()
+      }
       annotation.page = pageNumber
 
       const annotations = this.getAllAnnotations(documentId)
