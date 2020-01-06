@@ -216,7 +216,7 @@ export default class RectHandler {
       })
 
       return group
-    } if (a.type === 'strikeout') {
+    } else if (a.type === 'strikeout') {
       const group = document.createElementNS('http://www.w3.org/2000/svg', 'g')
       const { viewport: { scale } } = this.parent
       setAttributes(group, {
@@ -238,7 +238,7 @@ export default class RectHandler {
       })
 
       return group
-    } else {
+    } else if (a.type === 'area') {
       offset.width = 1
       offset.height = 1
       const rect = this._createRect(a, offset)
