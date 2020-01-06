@@ -1,23 +1,24 @@
-
 import {
+  BORDER_COLOR,
   scaleDown,
   scaleUp,
-  setAttributes,
-  normalizeColor
+  normalizeColor,
+  setAttributes
 } from './Utils'
 /**
  *
  * trigger event: anno:focus; anno:blur
 **/
-export default class PenHandler {
+export default class LineHandler {
   constructor (parent) {
-    this.support = ['drawing'] // support command mode
+    this.support = ['line'] // support command mode
     this.parent = parent
     this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId
     this.getConfig = parent.getConfig
     this.path = null
-    this.lines = []
+    this.origin = {}
+    this.end = {}
   }
 
   /**
@@ -26,8 +27,15 @@ export default class PenHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMousedown (e) {
-    this.path = {} // use {} to indicate start
-    this.lines = []
+    const { svg, viewport: { scale } } = this.parent
+    const rect = svg.getBoundingClientRect()
+    const point = scaleDown(scale, {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    })
+    this.origin = point
+    this.end = Object.assign({}, point)
+    this.path = {}
   }
 
   /**
@@ -37,7 +45,7 @@ export default class PenHandler {
    */
   handleMousemove (e) {
     if (this.path) {
-      this.savePoint(e.clientX, e.clientY)
+      this.saveLine(e.clientX, e.clientY)
     }
   }
 
@@ -47,13 +55,13 @@ export default class PenHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMouseup (e) {
-    if (this.lines.length > 1) {
+    if (Math.abs(this.origin.x - this.end.x) > 14 && Math.abs(this.origin.y - this.end.y) > 14) {
       const { color, size } = this.getConfig('pen')
       const anno = {
-        type: 'drawing',
+        type: 'line',
         color,
         width: size,
-        lines: this.lines
+        points: [this.origin, this.end]
       }
       // Add the annotation
       this.parent.callback({ type: 'anno:add', data: anno })
@@ -83,7 +91,16 @@ export default class PenHandler {
       svg.removeChild(this.path)
     }
     this.path = null
+    this.origin = {}
+    this.end = {}
   }
+
+  /**
+   * Handle mouse leave event
+   *
+   * @param {Event} e The DOM event to handle
+   */
+  handleMouseleave (e) {}
 
   /**
    * Save a point to the line being drawn.
@@ -91,7 +108,7 @@ export default class PenHandler {
    * @param {Number} x The x coordinate of the point
    * @param {Number} y The y coordinate of the point
    */
-  savePoint (x, y) {
+  saveLine (x, y) {
     const { svg, viewport: { scale } } = this.parent
     if (!svg) {
       return
@@ -102,19 +119,13 @@ export default class PenHandler {
       x: x - rect.left,
       y: y - rect.top
     })
-
-    this.lines.push([point.x, point.y])
-
-    if (this.lines.length <= 1) {
-      return
-    }
-
+    this.end = point
     const { color, size } = this.getConfig('pen')
     const anno = {
-      type: 'drawing',
+      type: 'line',
       color,
       width: size,
-      lines: this.lines
+      points: [this.origin, point]
     }
 
     if (this.path.nodeType) {
@@ -128,37 +139,26 @@ export default class PenHandler {
   }
 
   /**
-    * Render a drawing annotation
-    *
-    * @param {Annotation} a the annotation
-  */
+   * Render annotation
+   *
+   * @param {Event} e The DOM event to handle
+   */
   render (a) {
-    const d = []
+    const { viewport: { scale } } = this.parent
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
 
-    for (let i = 0, l = a.lines.length; i < l; i++) {
-      const p1 = this._scaleUp(a.lines[i])
-      let p2 = a.lines[i + 1]
-      if (p2) {
-        p2 = this._scaleUp(p2)
-        d.push(`M${p1[0]} ${p1[1]} ${p2[0]} ${p2[1]}`)
-      }
-    }
-
+    let [start, end] = a.points
+    start = scaleUp(scale, start)
+    end = scaleUp(scale, end)
+    const d = `M ${start.x} ${start.y} ${end.x} ${end.y}`
     setAttributes(path, {
-      d: `${d.join(' ')}Z`,
+      d,
       stroke: normalizeColor(a.color || '#000'),
       strokeWidth: a.width || 1,
+      markerEnd: 'url(#red-arrowhead)',
       fill: 'none'
     })
 
     return path
-  }
-
-  _scaleUp (p) {
-    const { viewport: { scale } } = this.parent
-    let tp = { x: p[0], y: p[1] }
-    tp = scaleUp(scale, tp)
-    return [tp.x, tp.y]
   }
 }

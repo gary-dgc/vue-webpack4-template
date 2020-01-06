@@ -59,6 +59,11 @@
       >Draw</a>
       <a
         class="icon"
+        :class="{active: action === 'line'}"
+        @click.prevent.stop="doAction('line')"
+      >Line</a>
+      <a
+        class="icon"
         :class="{active: action === 'text'}"
         @click.prevent.stop="doAction('text')"
       >Text</a>

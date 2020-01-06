@@ -14,8 +14,6 @@ import {
 export default class RectHandler {
   constructor (parent) {
     this.support = ['highlight', 'strikeout'] // support command mode
-    this.originX = 0
-    this.originY = 0
     this.parent = parent
     this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId

@@ -3,6 +3,7 @@ import Rect from './helpers/Rect'
 import Area from './helpers/Area'
 import Edit from './helpers/Edit'
 import Pen from './helpers/Pen'
+import Line from './helpers/Line'
 import Text from './helpers/Text'
 import adapter from './adapter'
 
@@ -69,7 +70,7 @@ class Annotator {
     this.helpers = {};
     // initial the command handlers
     [new Rect(this), new Edit(this), new Pen(this),
-      new Area(this), new Text(this)].forEach(hdlr => {
+      new Area(this), new Text(this), new Line(this)].forEach(hdlr => {
       hdlr.support.forEach(cmd => {
         this.helpers[cmd] = hdlr
       })
