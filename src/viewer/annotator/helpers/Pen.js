@@ -58,7 +58,7 @@ export default class PenHandler {
       // Add the annotation
       this.parent.callback({ type: 'anno:add', data: anno })
     }
-    this.reset()
+    this._reset()
   }
 
   /**
@@ -69,11 +69,14 @@ export default class PenHandler {
   handleKeyup (e) {
     // Cancel rect if Esc is pressed
     if (e.keyCode === 27) {
-      this.reset()
+      this._reset()
     }
   }
 
-  reset () {
+  /**
+   * Reset the operation state
+  */
+  _reset () {
     this.lines = []
     if (this.path) {
       const { svg } = this.parent
@@ -107,6 +110,7 @@ export default class PenHandler {
     }
 
     const { color, size } = this.getConfig('pen')
+    console.log(color)
     const anno = {
       type: 'drawing',
       color,
@@ -114,7 +118,8 @@ export default class PenHandler {
       lines: this.lines
     }
 
-    if (this.path) {
+    if (this.path.nodeType) {
+      // remove old dom element
       svg.removeChild(this.path)
     }
 
