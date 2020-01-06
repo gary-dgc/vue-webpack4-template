@@ -2,7 +2,17 @@
   <div
     class="anno-edit"
     :style="style"
-  />
+  >
+    <div
+      ref="note-input"
+      class="anno-note"
+    >
+      <input
+        class="anno-note-input"
+        placeholder="Pls add note"
+      >
+    </div>
+  </div>
 </template>
 <script>
 export default {
@@ -43,10 +53,20 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
 .anno-edit{
   position: absolute;
   border: 2px dashed gray;
-
+}
+.anno-note{
+  position: absolute;
+  top: calc( 50% - 10px );
+  display: flex;
+  align-items: center;
+}
+.anno-note-input{
+  border: none;
+  font-size: 12px;
+  background-color: rgba(51, 170, 51, .1);
 }
 </style>

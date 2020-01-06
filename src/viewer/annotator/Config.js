@@ -7,6 +7,10 @@ const AnnoInfo = {
   pen: {
     size: 2,
     color: '#FF0000'
+  },
+  text: {
+    size: 12,
+    color: '#888888'
   }
 }
 

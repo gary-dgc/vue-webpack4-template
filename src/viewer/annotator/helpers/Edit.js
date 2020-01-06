@@ -136,23 +136,23 @@ export default class EditHandler {
       rectangles.forEach(r => {
         if (rect.x === 0 || rect.x > r.x) {
           rect.x = r.x
-          rect.width += (rect.x - r.x) > 0 ? rect.x > r.x : 0
+          rect.width += rect.x > r.x ? rect.x - r.x : 0
         }
 
         if (rect.y === 0 || rect.y > r.y) {
           rect.y = r.y
-          rect.height += (rect.y - r.y) > 0 ? rect.y - r.y : 0
+          rect.height += rect.y > r.y ? rect.y - r.y : 0
         }
 
         if (rect.width === 0) {
           rect.width = r.width
-        } else if (rect.x + rect.width > r.x + r.width) {
+        } else if (rect.x + rect.width < r.x + r.width) {
           rect.width = r.x + r.width - rect.x
         }
 
         if (rect.height === 0) {
           rect.height = r.height
-        } else if (rect.y + rect.height > r.y + r.height) {
+        } else if (rect.y + rect.height < r.y + r.height) {
           rect.height = r.y + r.height - rect.y
         }
       })

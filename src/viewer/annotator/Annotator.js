@@ -1,7 +1,9 @@
 import EventEmitter from 'events'
 import Rect from './helpers/Rect'
+import Area from './helpers/Area'
 import Edit from './helpers/Edit'
 import Pen from './helpers/Pen'
+import Text from './helpers/Text'
 import adapter from './adapter'
 
 import { setAnnoInfo, getAnnoInfo } from './Config'
@@ -66,7 +68,8 @@ class Annotator {
     this.type = getAnnoInfo('anno_type')
     this.helpers = {};
     // initial the command handlers
-    [new Rect(this), new Edit(this), new Pen(this)].forEach(hdlr => {
+    [new Rect(this), new Edit(this), new Pen(this),
+      new Area(this), new Text(this)].forEach(hdlr => {
       hdlr.support.forEach(cmd => {
         this.helpers[cmd] = hdlr
       })
@@ -110,7 +113,6 @@ class Annotator {
    * Handle mouse-down
    **/
   handleMousedown () {
-    console.log(this.handler)
     if (this.handler && this.handler.handleMousedown) {
       this.handler.handleMousedown(...arguments)
     }

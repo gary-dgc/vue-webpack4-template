@@ -142,6 +142,7 @@ export default {
         this.annotator.render(data)
       } else if (type === 'anno:focus') {
         if (data.uuid !== this.active.uuid) {
+          // only another annotation reassign
           this.active = data
         }
       } else if (type === 'anno:blur') {

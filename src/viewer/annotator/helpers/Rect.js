@@ -1,6 +1,5 @@
 
 import {
-  BORDER_COLOR,
   setAttributes,
   getSelectionRects,
   normalizeColor,
@@ -14,8 +13,7 @@ import {
 **/
 export default class RectHandler {
   constructor (parent) {
-    this.support = ['highlight', 'strikeout', 'area'] // support command mode
-    this.overlay = undefined
+    this.support = ['highlight', 'strikeout'] // support command mode
     this.originX = 0
     this.originY = 0
     this.parent = parent
@@ -29,56 +27,14 @@ export default class RectHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleMousedown (e) {
-    if (this.getAnnoType() !== 'area') {
-      return
-    }
-    const { svg } = this.parent
-    const rect = svg.getBoundingClientRect()
-    this.originY = e.clientY
-    this.originX = e.clientX
-
-    this.overlay = document.createElement('div')
-    this.overlay.style.position = 'absolute'
-    this.overlay.style.top = `${Math.ceil(this.originY - rect.top)}px`
-    this.overlay.style.left = `${Math.ceil(this.originX - rect.left)}px`
-    this.overlay.style.border = `2px solid ${BORDER_COLOR}`
-    this.overlay.style.borderRadius = '2px'
-
-    svg.parentNode.appendChild(this.overlay)
-  }
+  handleMousedown (e) { }
 
   /**
    * Handle document.mousemove event
    *
    * @param {Event} e The DOM event to handle
    */
-  handleMousemove (e) {
-    if (['highlight', 'strikeout'].includes(this.getAnnoType()) || !this.overlay) {
-      return
-    }
-    const { svg } = this.parent
-    const rect = svg.getBoundingClientRect()
-
-    const diff = { x: e.clientX - this.originX, y: e.clientY - this.originY }
-
-    if (diff.x >= 0 && this.originX + diff.x < rect.right) {
-      // bottom + right moving
-      this.overlay.style.width = `${diff.x}px`
-    } else if (diff.x < 0 && this.originX + diff.x > rect.left) {
-      // top + left moving
-      this.overlay.style.left = `${Math.ceil(e.clientX - rect.left)}px`
-      this.overlay.style.width = `${Math.abs(diff.x)}px`
-    }
-    if (diff.y >= 0 && this.originY + diff.y < rect.bottom) {
-      // bottom + right moving
-      this.overlay.style.height = `${diff.y}px`
-    } else if (diff.y < 0 && this.originY + diff.y > rect.top) {
-      // top + left moving
-      this.overlay.style.top = `${Math.ceil(e.clientY - rect.top)}px`
-      this.overlay.style.height = `${-1 * diff.y}px`
-    }
-  }
+  handleMousemove (e) { }
 
   /**
    * Handle document.mouseup event
@@ -97,18 +53,6 @@ export default class RectHandler {
           height: r.height
         }
       }))
-    } else if (type === 'area' && this.overlay) {
-      const { svg } = this.parent
-      const rect = svg.getBoundingClientRect()
-      this.saveRect(type, [{
-        top: parseInt(this.overlay.style.top, 10) + rect.top,
-        left: parseInt(this.overlay.style.left, 10) + rect.left,
-        width: parseInt(this.overlay.style.width, 10),
-        height: parseInt(this.overlay.style.height, 10)
-      }])
-
-      this.overlay.parentNode.removeChild(this.overlay)
-      this.overlay = null
     }
   }
 
@@ -122,10 +66,6 @@ export default class RectHandler {
     if (e.keyCode === 27) {
       const selection = window.getSelection()
       selection.removeAllRanges()
-      if (this.overlay && this.overlay.parentNode) {
-        this.overlay.parentNode.removeChild(this.overlay)
-        this.overlay = null
-      }
     }
   }
 
@@ -184,16 +124,6 @@ export default class RectHandler {
       return
     }
 
-    // Special treatment for area as it only supports a single rect
-    if (type === 'area') {
-      const rect = annotation.rectangles[0]
-      delete annotation.rectangles
-      annotation.x = rect.x
-      annotation.y = rect.y
-      annotation.width = rect.width
-      annotation.height = rect.height
-    }
-
     // Add the annotation
     this.parent.callback({ type: 'anno:add', data: annotation })
   }
@@ -239,17 +169,6 @@ export default class RectHandler {
       })
 
       return group
-    } else if (a.type === 'area') {
-      offset.width = 1
-      offset.height = 1
-      const rect = this._createRect(a, offset)
-      setAttributes(rect, {
-        stroke: normalizeColor(a.color || '#f00'),
-        strokeWidth: 2,
-        fill: 'none'
-      })
-
-      return rect
     }
   }
 
