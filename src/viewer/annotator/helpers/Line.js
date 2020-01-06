@@ -1,5 +1,4 @@
 import {
-  BORDER_COLOR,
   scaleDown,
   scaleUp,
   normalizeColor,
