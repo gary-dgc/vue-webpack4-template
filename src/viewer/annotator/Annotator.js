@@ -64,24 +64,15 @@ class Annotator {
     this.viewport = viewport
     this._callback = callback
     this.type = getAnnoInfo('anno_type')
-    this.helpers = {}
-    this.helpers.rect = new Rect(this)
-    this.helpers.edit = new Edit(this)
-    this.helpers.drawing = new Pen(this)
-    this.reset()
+    this.helpers = {};
+    // initial the command handlers
+    [new Rect(this), new Edit(this), new Pen(this)].forEach(hdlr => {
+      hdlr.support.forEach(cmd => {
+        this.helpers[cmd] = hdlr
+      })
+    })
+    this.handler = this.helpers[this.type] // reset handler
     this.hook()
-  }
-
-  reset () {
-    if (['highlight', 'strikeout', 'area'].includes(this.type)) {
-      this.handler = this.helpers.rect
-    } else if (['edit'].includes(this.type)) {
-      this.handler = this.helpers.edit
-    } else if (['drawing'].includes(this.type)) {
-      this.handler = this.helpers.drawing
-    } else {
-      this.handler = undefined
-    }
   }
 
   /**
@@ -92,7 +83,7 @@ class Annotator {
   }
 
   /**
-   * Get document id
+   * Get global configuration
   **/
   getConfig (setting) {
     return getAnnoInfo(setting)
@@ -105,7 +96,7 @@ class Annotator {
   enable ({ type } = {}) {
     if (!type) return
     this.type = type
-    this.reset()
+    this.handler = this.helpers[this.type] // reset handler
   }
 
   /**
@@ -186,18 +177,13 @@ class Annotator {
    * @param {Annotation} annotation data
   */
   _renderAnno (annotation) {
-    let child
-    this._removeAnno(annotation)
-    switch (annotation.type) {
-      case 'area':
-      case 'highlight':
-      case 'strikeout':
-        child = this.helpers.rect.render(annotation)
-        break
-      case 'drawing':
-        child = this.helpers.drawing.render(annotation)
-        break
+    this._removeAnno(annotation) // remove old drawing
+    const handler = this.helpers[annotation.type]
+    if (!handler) {
+      // not found any handler
+      return
     }
+    const child = handler.render(annotation)
 
     // If no type was provided for an annotation it will result in node being null.
     // Skip appending/transforming if node doesn't exist.
@@ -264,7 +250,7 @@ class Annotator {
   hook () {
     const _eventRef = function () {
       const { type } = arguments[0] || {}
-      if (['highlight', 'strikeout', 'area', 'edit', 'drawing'].includes(type)) {
+      if (Object.keys(this.helpers).includes(type)) {
         this.enable({ type })
       }
       this.callback(...arguments)
