@@ -38,6 +38,7 @@
     />
     <PDFAnno
       v-if="active.uuid"
+      :key="active.uuid"
       :data="active"
       :annotator="annotator"
       :scale="scale"
@@ -140,7 +141,9 @@ export default {
         this.annotations.push(data)
         this.annotator.render(data)
       } else if (type === 'anno:focus') {
-        this.active = data
+        if (data.uuid !== this.active.uuid) {
+          this.active = data
+        }
       } else if (type === 'anno:blur') {
         this.active = {}
       }
