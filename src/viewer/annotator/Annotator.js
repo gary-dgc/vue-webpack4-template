@@ -119,6 +119,7 @@ class Annotator {
    * Handle mouse-down
    **/
   handleMousedown () {
+    console.log(this.handler)
     if (this.handler && this.handler.handleMousedown) {
       this.handler.handleMousedown(...arguments)
     }
@@ -227,9 +228,10 @@ class Annotator {
    * Remove the annotation dom element
   **/
   _removeAnno (annotation) {
+    if (!annotation.uuid) return
     const elms = this.svg.querySelectorAll("[data-pdf-annotate-id='" + annotation.uuid + "']")
     elms.forEach(elm => {
-      this.svg.removeChild(elm)
+      if (elm) { this.svg.removeChild(elm) }
     })
   }
 
@@ -262,7 +264,7 @@ class Annotator {
   hook () {
     const _eventRef = function () {
       const { type } = arguments[0] || {}
-      if (['highlight', 'strikeout', 'area', 'edit'].includes(type)) {
+      if (['highlight', 'strikeout', 'area', 'edit', 'drawing'].includes(type)) {
         this.enable({ type })
       }
       this.callback(...arguments)

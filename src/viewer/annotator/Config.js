@@ -5,8 +5,8 @@ const AnnoInfo = {
   doc_id: '',
   anno_type: 'edit',
   pen: {
-    size: 3,
-    color: '#DDDDDD'
+    size: 2,
+    color: '#FF0000'
   }
 }
 

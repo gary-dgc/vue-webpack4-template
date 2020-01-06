@@ -9,6 +9,7 @@ import {
 **/
 export default class EditHandler {
   constructor (parent) {
+    this.support = ['edit'] // support command mode
     this.overlay = undefined
     this.parent = parent
     this.getAnnoType = () => parent.type

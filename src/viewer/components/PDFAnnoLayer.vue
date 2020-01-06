@@ -3,7 +3,7 @@
     class="anno-container"
     @mousedown.left="onMouseDown($event)"
     @mouseup.left="onMouseUp($event)"
-    @mousemove="onMouseMove($event)"
+    @mousemove.left="onMouseMove($event)"
     @mouseleave.left="onMouseLeave($event)"
   >
     <svg

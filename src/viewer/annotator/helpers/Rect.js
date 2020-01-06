@@ -14,6 +14,7 @@ import {
 **/
 export default class RectHandler {
   constructor (parent) {
+    this.support = ['highlight', 'strikeout', 'area'] // support command mode
     this.overlay = undefined
     this.originX = 0
     this.originY = 0
@@ -67,7 +68,7 @@ export default class RectHandler {
     } else if (diff.x < 0 && this.originX + diff.x > rect.left) {
       // top + left moving
       this.overlay.style.left = `${Math.ceil(e.clientX - rect.left)}px`
-      this.overlay.style.width = `${-1 * diff.x}px`
+      this.overlay.style.width = `${Math.abs(diff.x)}px`
     }
     if (diff.y >= 0 && this.originY + diff.y < rect.bottom) {
       // bottom + right moving

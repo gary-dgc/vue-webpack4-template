@@ -11,11 +11,12 @@ import {
 **/
 export default class PenHandler {
   constructor (parent) {
+    this.support = ['drawing'] // support command mode
     this.parent = parent
     this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId
     this.getConfig = parent.getConfig
-    this.path = {}
+    this.path = null
     this.lines = []
   }
 
@@ -25,7 +26,7 @@ export default class PenHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMousedown (e) {
-    this.path = null
+    this.path = {} // use {} to indicate start
     this.lines = []
   }
 
@@ -35,7 +36,9 @@ export default class PenHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMousemove (e) {
-    this.savePoint(e.clientX, e.clientY)
+    if (this.path) {
+      this.savePoint(e.clientX, e.clientY)
+    }
   }
 
   /**
@@ -55,6 +58,7 @@ export default class PenHandler {
       // Add the annotation
       this.parent.callback({ type: 'anno:add', data: anno })
     }
+    this.reset()
   }
 
   /**
@@ -65,12 +69,17 @@ export default class PenHandler {
   handleKeyup (e) {
     // Cancel rect if Esc is pressed
     if (e.keyCode === 27) {
-      this.lines = null
-      if (this.path) {
-        const { svg } = this.parent
-        svg.removeChild(this.path)
-      }
+      this.reset()
     }
+  }
+
+  reset () {
+    this.lines = []
+    if (this.path) {
+      const { svg } = this.parent
+      svg.removeChild(this.path)
+    }
+    this.path = null
   }
 
   /**
@@ -111,6 +120,7 @@ export default class PenHandler {
 
     // render new path graph
     this.path = this.render(anno)
+    svg.appendChild(this.path)
   }
 
   /**
