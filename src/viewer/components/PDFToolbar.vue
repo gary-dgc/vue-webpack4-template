@@ -67,6 +67,11 @@
         :class="{active: action === 'text'}"
         @click.prevent.stop="doAction('text')"
       >Tx</a>
+      <a
+        class="icon"
+        :class="{active: action === 'point'}"
+        @click.prevent.stop="doAction('point')"
+      >Tx</a>
     </div>
   </div>
 </template>

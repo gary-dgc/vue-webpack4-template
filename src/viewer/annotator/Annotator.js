@@ -5,6 +5,7 @@ import Edit from './helpers/Edit'
 import Pen from './helpers/Pen'
 import Line from './helpers/Line'
 import Text from './helpers/Text'
+import Point from './helpers/Point'
 import adapter from './adapter'
 
 import { setAnnoInfo, getAnnoInfo } from './Config'
@@ -70,7 +71,8 @@ class Annotator {
     this.helpers = {};
     // initial the command handlers
     [new Rect(this), new Edit(this), new Pen(this),
-      new Area(this), new Text(this), new Line(this)].forEach(hdlr => {
+      new Area(this), new Text(this), new Line(this),
+      new Point(this)].forEach(hdlr => {
       hdlr.support.forEach(cmd => {
         this.helpers[cmd] = hdlr
       })

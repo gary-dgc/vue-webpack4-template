@@ -9,9 +9,9 @@ import {
  *
  * trigger event: anno:focus; anno:blur
 **/
-export default class TextHandler {
+export default class PointHandler {
   constructor (parent) {
-    this.support = ['text'] // support command mode
+    this.support = ['point'] // support command mode
     this.parent = parent
     this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId
@@ -92,39 +92,35 @@ export default class TextHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleMouseleave (e) {}
+  handleMouseleave (e) {
+    this.reset()
+  }
 
   /**
    * Handle input.blur event
    */
   _inputBlur () {
-    this.saveText()
+    this.savePoint()
   }
 
   /**
     * Save a text annotation from input
     */
-  saveText () {
+  savePoint () {
     const { input } = this
     if (this.input.value.trim().length > 0) {
       const clientX = parseInt(input.style.left, 10)
       const clientY = parseInt(input.style.top, 10)
       const { svg } = this.parent
-      if (!svg) {
-        return
-      }
-      const { size, color } = this.getConfig('text')
+      const { size } = this.getConfig('point')
       const rect = svg.getBoundingClientRect()
       const annotation = Object.assign({
-        type: 'text',
-        size,
-        color,
+        type: 'point',
         content: input.value.trim()
       }, scaleDown(svg, {
         x: clientX - rect.left,
         y: clientY - rect.top,
-        width: input.offsetWidth,
-        height: input.offsetHeight
+        size: size
       })
       )
 
@@ -136,26 +132,25 @@ export default class TextHandler {
 
   /**
    * Render annotation
-   *
+   * <use xlink:href="#blast-icon" x="50" y="50" width="20px" height="20px" />
    * @param {Event} e The DOM event to handle
    */
   render (a) {
     const { viewport: { scale } } = this.parent
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use')
 
     const pos = scaleUp(scale, {
       x: a.x,
-      y: a.y + parseInt(a.size, 10),
+      y: a.y,
       size: a.size
     })
-    setAttributes(text, {
+    setAttributes(use, {
       x: pos.x,
       y: pos.y,
-      fill: normalizeColor(a.color || '#000'),
-      fontSize: pos.size
+      width: `${pos.size}px`,
+      height: `${pos.size}px`
     })
-    text.innerHTML = a.content
 
-    return text
+    return use
   }
 }
