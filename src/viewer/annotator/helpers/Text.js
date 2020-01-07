@@ -60,9 +60,9 @@ export default class TextHandler {
     this.input.style.border = `1px dashed ${BORDER_COLOR}`
     this.input.style.borderRadius = '3px'
     this.input.style.position = 'absolute'
-    this.input.style.top = `${e.clientY - rect.y}px`
+    this.input.style.top = `${e.clientY - rect.y - Math.ceil(size * scale) / 2}px`
     this.input.style.left = `${e.clientX - rect.x}px`
-    this.input.style.fontSize = `${Math.ceil(size / scale)}px`
+    this.input.style.fontSize = `${Math.ceil(size * scale)}px`
     this.input.style.color = color
 
     this._blurRef = this._inputBlur.bind(this)

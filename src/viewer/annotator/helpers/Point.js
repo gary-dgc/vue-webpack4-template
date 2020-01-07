@@ -59,9 +59,9 @@ export default class PointHandler {
     this.input.style.border = `1px dashed ${BORDER_COLOR}`
     this.input.style.borderRadius = '3px'
     this.input.style.position = 'absolute'
-    this.input.style.top = `${e.clientY - rect.y}px`
+    this.input.style.top = `${e.clientY - rect.y - Math.ceil(size * scale) / 2}px`
     this.input.style.left = `${e.clientX - rect.x}px`
-    this.input.style.fontSize = `${Math.ceil(size / scale)}px`
+    this.input.style.fontSize = `${Math.ceil(size * scale)}px`
     this.input.style.color = color
 
     this._blurRef = this._inputBlur.bind(this)
@@ -124,7 +124,7 @@ export default class PointHandler {
         type: 'point',
         content: input.value.trim()
       }, scaleDown(scale, {
-        x: clientX,
+        x: clientX - size / 2,
         y: clientY,
         size: size
       })
@@ -154,8 +154,8 @@ export default class PointHandler {
     setAttributes(use, {
       x: pos.x,
       y: pos.y,
-      width: `${pos.size}px`,
-      height: `${pos.size}px`
+      width: `${Math.ceil(pos.size)}px`,
+      height: `${Math.ceil(pos.size)}px`
     })
     use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#blast-icon')
     return use
