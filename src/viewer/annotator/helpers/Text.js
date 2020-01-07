@@ -66,8 +66,8 @@ export default class TextHandler {
     this.input.style.fontSize = `${size}px`
     this.input.style.color = color
 
-    this.input.addEventListener('blur', this._inputBlur)
-    this.input.addEventListener('keyup', this._inputKeyup)
+    this.input.addEventListener('blur', this._inputBlur.bind(this))
+    this.input.addEventListener('keyup', this._inputKeyup.bind(this))
 
     svg.parentNode.appendChild(this.input)
 
