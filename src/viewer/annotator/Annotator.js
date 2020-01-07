@@ -212,7 +212,16 @@ class Annotator {
   /**
    * Remove all the annotations dom element from svg
   **/
-  remove () {
+  remove (annotation) {
+    console.log(annotation)
+    if (annotation) {
+      adapter.deleteAnnotation(this.getDocId(), annotation.uuid)
+        .then(() => {
+          this._removeAnno(annotation)
+          this._callback({ type: 'anno:cancel', data: annotation })
+        })
+      return
+    }
     const elms = this.svg.querySelectorAll('[data-pdf-annotate-id]')
     elms.forEach(elm => {
       this.svg.removeChild(elm)
