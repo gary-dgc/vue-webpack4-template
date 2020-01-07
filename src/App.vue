@@ -6,17 +6,13 @@
     />
   </div>
 </template>
-
 <script>
 import PDFViewer from './viewer/components/PDFViewer.vue'
-
 export default {
   name: 'App',
-
   components: {
     PDFViewer
   },
-
   data () {
     return {
       url: 'https://cdn.filestackcontent.com/wcrjf9qPTCKXV3hMXDwK',
@@ -24,7 +20,6 @@ export default {
       enableUploader: false
     }
   },
-
   methods: {
     urlUpdated (url) {
       this.documentError = undefined
@@ -34,7 +29,6 @@ export default {
       this.documentError = e.text
     }
   }
-
 }
 </script>
 
