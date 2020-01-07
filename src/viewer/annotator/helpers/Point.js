@@ -51,7 +51,7 @@ export default class PointHandler {
    */
   handleMouseup (e) {
     const { size, color } = this.getConfig('text')
-    const { svg } = this.parent
+    const { svg, viewport: { scale } } = this.parent
     const rect = svg.getBoundingClientRect()
     this.input = document.createElement('input')
     this.input.setAttribute('id', 'pdf-annotate-point-input')
@@ -61,7 +61,7 @@ export default class PointHandler {
     this.input.style.position = 'absolute'
     this.input.style.top = `${e.clientY - rect.y}px`
     this.input.style.left = `${e.clientX - rect.x}px`
-    this.input.style.fontSize = `${size}px`
+    this.input.style.fontSize = `${Math.ceil(size / scale)}px`
     this.input.style.color = color
 
     this._blurRef = this._inputBlur.bind(this)
