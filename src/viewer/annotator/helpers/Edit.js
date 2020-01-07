@@ -114,10 +114,11 @@ export default class EditHandler {
 
   /**
    * Check range in or out
+   * @param {pos} {x, y}
    * return: true - found; false - unfound
   */
   _checkRange (annotation, rpos) {
-    const { type, rectangles, x, y, width, height } = annotation
+    const { type, rectangles, x, y, width, height, lines } = annotation
     let found = false
     if (['highlight', 'strikeout'].includes(type)) {
       rectangles.some(r => {
@@ -138,6 +139,24 @@ export default class EditHandler {
       if (rdiff.x > 0 && rdiff.x < width && rdiff.y > 0 && rdiff.y < height) {
         found = true
       }
+    } else if (['line'].includes(type)) {
+      const [start, end] = lines
+
+      const dist = Math.sqrt(Math.pow(Math.abs(start.x - end.x), 2) + Math.pow(Math.abs(start.y - end.y), 2))
+      const dist1 = Math.sqrt(Math.pow(Math.abs(start.x - rpos.x), 2) + Math.pow(Math.abs(start.y - rpos.y), 2))
+      const dist2 = Math.sqrt(Math.pow(Math.abs(end.x - rpos.x), 2) + Math.pow(Math.abs(end.y - rpos.y), 2))
+
+      if (dist1 + dist2 - dist < 5) {
+        found = true
+      }
+    } else if (['drawing'].includes(type)) {
+      lines.some(l => {
+        const dist = Math.sqrt(Math.pow((l.x - rpos.x), 2) + Math.pow((l.y - rpos.y), 2))
+        if (dist < 4) {
+          found = true
+          return true
+        }
+      })
     }
     return found
   }
@@ -148,7 +167,7 @@ export default class EditHandler {
   **/
   calcAnnoRange (annotation) {
     const { viewport: { scale } } = this.parent
-    const { type, rectangles, x, y, width, height } = annotation
+    const { type, rectangles, x, y, width, height, lines } = annotation
     let rect = { x: 0, y: 0, width: 0, height: 0 }
     if (['highlight', 'strikeout'].includes(type)) {
       rectangles.forEach(r => {
@@ -180,6 +199,26 @@ export default class EditHandler {
       rect.y = y
       rect.width = width
       rect.height = height
+    } else if (['line'].includes(type)) {
+      const [start, end] = lines
+      rect.x = Math.min(start.x, end.x)
+      rect.y = Math.min(start.y, end.y)
+      rect.width = Math.abs(start.x - end.x)
+      rect.height = Math.abs(start.y - end.y)
+    } else if (['drawing'].includes(type)) {
+      const [first, ...rest] = lines
+      const maxPos = Object.assign({}, first)
+      rect.x = first.x
+      rect.y = first.y
+
+      rest.forEach(l => {
+        rect.x = Math.min(rect.x, l.x)
+        rect.y = Math.min(rect.y, l.y)
+        maxPos.x = Math.max(maxPos.x, l.x)
+        maxPos.y = Math.max(maxPos.y, l.y)
+      })
+      rect.width = maxPos.x - rect.x
+      rect.height = maxPos.y - rect.y
     }
 
     rect = scaleUp(scale, rect)

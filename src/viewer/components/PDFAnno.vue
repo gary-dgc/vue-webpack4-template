@@ -66,6 +66,7 @@ export default {
 }
 .anno-note-input{
   border: none;
+  display: none;
   font-size: 12px;
   background-color: rgba(51, 170, 51, .1);
 }

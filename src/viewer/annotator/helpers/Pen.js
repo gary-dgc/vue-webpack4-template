@@ -103,7 +103,7 @@ export default class PenHandler {
       y: y - rect.top
     })
 
-    this.lines.push([point.x, point.y])
+    this.lines.push(point)
 
     if (this.lines.length <= 1) {
       return
@@ -134,14 +134,15 @@ export default class PenHandler {
   */
   render (a) {
     const d = []
+    const { viewport: { scale } } = this.parent
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
 
     for (let i = 0, l = a.lines.length; i < l; i++) {
-      const p1 = this._scaleUp(a.lines[i])
+      const p1 = scaleUp(scale, a.lines[i])
       let p2 = a.lines[i + 1]
       if (p2) {
-        p2 = this._scaleUp(p2)
-        d.push(`M${p1[0]} ${p1[1]} ${p2[0]} ${p2[1]}`)
+        p2 = scaleUp(scale, p2)
+        d.push(`M${p1.x} ${p1.y} ${p2.x} ${p2.y}`)
       }
     }
 
@@ -153,12 +154,5 @@ export default class PenHandler {
     })
 
     return path
-  }
-
-  _scaleUp (p) {
-    const { viewport: { scale } } = this.parent
-    let tp = { x: p[0], y: p[1] }
-    tp = scaleUp(scale, tp)
-    return [tp.x, tp.y]
   }
 }

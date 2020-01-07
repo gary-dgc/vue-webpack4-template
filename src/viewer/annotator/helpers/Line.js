@@ -78,7 +78,7 @@ export default class LineHandler {
         type: 'line',
         color,
         width: size,
-        points: [this.origin, this.end]
+        lines: [this.origin, this.end]
       }
       // Add the annotation
       this.parent.callback({ type: 'anno:add', data: anno })
@@ -128,7 +128,7 @@ export default class LineHandler {
       type: 'line',
       color,
       width: size,
-      points: [this.origin, point]
+      lines: [this.origin, point]
     }
 
     if (this.path.nodeType) {
@@ -150,7 +150,7 @@ export default class LineHandler {
     const { viewport: { scale } } = this.parent
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
 
-    let [start, end] = a.points
+    let [start, end] = a.lines
     start = scaleUp(scale, start)
     end = scaleUp(scale, end)
     const d = `M ${start.x} ${start.y} ${end.x} ${end.y}`
