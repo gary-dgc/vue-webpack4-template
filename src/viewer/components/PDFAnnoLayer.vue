@@ -20,7 +20,7 @@
           refY="10"
           markerUnits="strokeWidth"
           markerWidth="8"
-          markerHeight="8"
+          markerHeight="6"
           orient="auto"
         >
           <path

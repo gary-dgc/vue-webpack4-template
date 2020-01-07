@@ -23,6 +23,10 @@ export default class LineHandler {
    *
    */
   reset () {
+    if (this.path && this.path.nodeType) {
+      const { svg } = this.parent
+      svg.removeChild(this.path)
+    }
     this.path = null
     this.origin = {}
     this.end = {}
@@ -52,7 +56,7 @@ export default class LineHandler {
    */
   handleMousemove (e) {
     if (this.path) {
-      this.saveLine(e.clientX, e.clientY)
+      this.drawLine(e.clientX, e.clientY)
     }
   }
 
@@ -62,7 +66,12 @@ export default class LineHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMouseup (e) {
-    if (Math.abs(this.origin.x - this.end.x) > 14 && Math.abs(this.origin.y - this.end.y) > 14) {
+    const diff = {
+      x: Math.abs(this.origin.x - this.end.x),
+      y: Math.abs(this.origin.y - this.end.y)
+    }
+    const c = Math.sqrt(diff.x * diff.x + diff.y * diff.y)
+    if (c > 8) {
       const { color, size } = this.getConfig('pen')
       const anno = {
         type: 'line',
@@ -73,7 +82,7 @@ export default class LineHandler {
       // Add the annotation
       this.parent.callback({ type: 'anno:add', data: anno })
     }
-    this._reset()
+    this.reset()
   }
 
   /**
@@ -84,22 +93,8 @@ export default class LineHandler {
   handleKeyup (e) {
     // Cancel rect if Esc is pressed
     if (e.keyCode === 27) {
-      this._reset()
+      this.reset()
     }
-  }
-
-  /**
-   * Reset the operation state
-  */
-  _reset () {
-    this.lines = []
-    if (this.path) {
-      const { svg } = this.parent
-      svg.removeChild(this.path)
-    }
-    this.path = null
-    this.origin = {}
-    this.end = {}
   }
 
   /**
@@ -115,7 +110,7 @@ export default class LineHandler {
    * @param {Number} x The x coordinate of the point
    * @param {Number} y The y coordinate of the point
    */
-  saveLine (x, y) {
+  drawLine (x, y) {
     const { svg, viewport: { scale } } = this.parent
     if (!svg) {
       return
