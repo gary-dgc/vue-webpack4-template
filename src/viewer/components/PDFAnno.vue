@@ -15,6 +15,7 @@
   </div>
 </template>
 <script>
+const OFFSET = { x: 5, y: 5 }
 export default {
   name: 'AnnoEdit',
   props: {
@@ -35,10 +36,10 @@ export default {
     style () {
       const { x, y, width, height } = this.data
       return {
-        top: `${y}px`,
-        left: `${x}px`,
-        width: `${width}px`,
-        height: `${height}px`
+        top: `${y - OFFSET.y}px`,
+        left: `${x - OFFSET.x}px`,
+        width: `${width + OFFSET.x * 2}px`,
+        height: `${height + OFFSET.y * 2}px`
       }
     }
   },
@@ -56,7 +57,10 @@ export default {
 <style>
 .anno-edit{
   position: absolute;
-  border: 1px dashed gray;
+  border: 2px dashed black;
+  filter:alpha(opacity = 10);
+  opacity:0.1;
+  background-color:green;
 }
 .anno-note{
   position: absolute;

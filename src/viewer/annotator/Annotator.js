@@ -237,7 +237,8 @@ class Annotator {
   show (annotationId, visible) {
     const elms = this.svg.querySelectorAll("[data-pdf-annotate-id='" + annotationId + "']")
     elms.forEach(elm => {
-      elm.style.visibility = visible ? 'visible' : 'hidden'
+      // elm.style.visibility = visible ? 'visible' : 'hidden'
+      elm.style.opacity = visible ? 1 : 0.5
     })
   }
 
