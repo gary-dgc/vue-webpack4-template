@@ -23,6 +23,12 @@ export default class TextHandler {
    *
    */
   reset () {
+    if (this.input && this.input.nodeType) {
+      this.input.removeEventListener('blur', this._inputBlur)
+      this.input.removeEventListener('keyup', this._inputKeyup)
+      const { svg } = this.parent
+      svg.parentNode.removeChild(this.input)
+    }
     this.input = undefined
   }
 
@@ -47,22 +53,23 @@ export default class TextHandler {
    */
   handleMouseup (e) {
     const { size, color } = this.getConfig('text')
+    const { svg } = this.parent
+    const rect = svg.getBoundingClientRect()
     this.input = document.createElement('input')
     this.input.setAttribute('id', 'pdf-annotate-text-input')
     this.input.setAttribute('placeholder', 'Enter text')
     this.input.style.border = `3px solid ${BORDER_COLOR}`
     this.input.style.borderRadius = '3px'
     this.input.style.position = 'absolute'
-    this.input.style.top = `${e.clientY}px`
-    this.input.style.left = `${e.clientX}px`
+    this.input.style.top = `${e.clientY - rect.y}px`
+    this.input.style.left = `${e.clientX - rect.x}px`
     this.input.style.fontSize = `${size}px`
     this.input.style.color = color
 
     this.input.addEventListener('blur', this._inputBlur)
     this.input.addEventListener('keyup', this._inputKeyup)
 
-    const { svg } = this.parent
-    svg.parent.appendChild(this.input)
+    svg.parentNode.appendChild(this.input)
 
     this.input.focus()
   }
@@ -88,23 +95,9 @@ export default class TextHandler {
     */
   _inputKeyup (e) {
     if (e.keyCode === 27) {
-      this.closeInput()
+      this.reset()
     } else if (e.keyCode === 13) {
       this.saveText()
-    }
-  }
-
-  /**
-   * Close the input
-   */
-  closeInput () {
-    if (this.input) {
-      this.input.removeEventListener('blur', this._inputBlur)
-      this.input.removeEventListener('keyup', this._inputKeyup)
-      const { svg } = this.parent
-      svg.parent.removeChild(this.input)
-
-      this.input = null
     }
   }
 
@@ -145,7 +138,7 @@ export default class TextHandler {
       this.parent.callback({ type: 'anno:add', data: annotation })
     }
 
-    this.closeInput()
+    this.reset()
   }
 
   /**

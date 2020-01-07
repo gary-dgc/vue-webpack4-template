@@ -36,7 +36,7 @@
         class="icon"
         :class="{active: action === 'edit'}"
         @click.prevent.stop="doAction('edit')"
-      >Edit</a>
+      >E</a>
       <a
         class="icon"
         :class="{active: action === 'area'}"
@@ -46,27 +46,27 @@
         class="icon"
         :class="{active: action === 'highlight'}"
         @click.prevent.stop="doAction('highlight')"
-      >Hlight</a>
+      >Hl</a>
       <a
         class="icon"
         :class="{active: action === 'strikeout'}"
         @click.prevent.stop="doAction('strikeout')"
-      >Sout</a>
+      >So</a>
       <a
         class="icon"
         :class="{active: action === 'drawing'}"
         @click.prevent.stop="doAction('drawing')"
-      >Draw</a>
+      >Dr</a>
       <a
         class="icon"
         :class="{active: action === 'line'}"
         @click.prevent.stop="doAction('line')"
-      >Line</a>
+      >Ln</a>
       <a
         class="icon"
         :class="{active: action === 'text'}"
         @click.prevent.stop="doAction('text')"
-      >Text</a>
+      >Tx</a>
     </div>
   </div>
 </template>

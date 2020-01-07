@@ -5,6 +5,7 @@
     @mouseup.left="onMouseUp($event)"
     @mousemove.left="onMouseMove($event)"
     @mouseleave.left="onMouseLeave($event)"
+    @keyup="onBoardKeyup"
   >
     <svg
       ref="anno-layer"
@@ -169,6 +170,10 @@ export default {
     onMouseLeave (e) {
       if (!this.annotator) return
       this.annotator.handleMouseleave(e)
+    },
+    onBoardKeyup (e) {
+      if (!this.annotator) return
+      this.annotator.handleKeyup(e)
     }
   }
 }
