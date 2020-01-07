@@ -118,7 +118,7 @@ export default class EditHandler {
    * return: true - found; false - unfound
   */
   _checkRange (annotation, rpos) {
-    const { type, rectangles, x, y, width, height, lines } = annotation
+    const { type, rectangles, x, y, size, width, height, lines } = annotation
     let found = false
     if (['highlight', 'strikeout'].includes(type)) {
       rectangles.some(r => {
@@ -131,7 +131,7 @@ export default class EditHandler {
           return true
         }
       })
-    } else if (['area'].includes(type)) {
+    } else if (['area', 'text'].includes(type)) {
       const rdiff = {
         x: rpos.x - x,
         y: rpos.y - y
@@ -157,6 +157,14 @@ export default class EditHandler {
           return true
         }
       })
+    } else if (['point'].includes(type)) {
+      const rdiff = {
+        x: rpos.x - x,
+        y: rpos.y - y
+      }
+      if (rdiff.x > 0 && rdiff.x < size && rdiff.y > 0 && rdiff.y < size) {
+        found = true
+      }
     }
     return found
   }
@@ -167,7 +175,7 @@ export default class EditHandler {
   **/
   calcAnnoRange (annotation) {
     const { viewport: { scale } } = this.parent
-    const { type, rectangles, x, y, width, height, lines } = annotation
+    const { type, rectangles, x, y, width, height, size, lines } = annotation
     let rect = { x: 0, y: 0, width: 0, height: 0 }
     if (['highlight', 'strikeout'].includes(type)) {
       rectangles.forEach(r => {
@@ -194,7 +202,7 @@ export default class EditHandler {
           rect.height = r.y + r.height - rect.y
         }
       })
-    } else if (['area'].includes(type)) {
+    } else if (['area', 'text'].includes(type)) {
       rect.x = x
       rect.y = y
       rect.width = width
@@ -219,6 +227,11 @@ export default class EditHandler {
       })
       rect.width = maxPos.x - rect.x
       rect.height = maxPos.y - rect.y
+    } else if (['point'].includes(type)) {
+      rect.x = x
+      rect.y = y
+      rect.width = size
+      rect.height = size
     }
 
     rect = scaleUp(scale, rect)

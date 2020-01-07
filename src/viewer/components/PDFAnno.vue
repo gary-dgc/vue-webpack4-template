@@ -56,7 +56,7 @@ export default {
 <style>
 .anno-edit{
   position: absolute;
-  border: 2px dashed gray;
+  border: 1px dashed gray;
 }
 .anno-note{
   position: absolute;
