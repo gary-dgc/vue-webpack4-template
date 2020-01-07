@@ -15,16 +15,16 @@
       <defs>
         <marker
           id="red-arrowhead"
-          viewBox="0 0 14 14"
-          refX="10"
-          refY="7"
+          viewBox="0 0 30 30"
+          refX="22"
+          refY="15"
           markerUnits="strokeWidth"
           markerWidth="6"
           markerHeight="4"
           orient="auto"
         >
           <path
-            d="M 5 7 L 0 0 L 14 7 L 0 14 L 5 7 z"
+            d="M 7 15 L 0 0 L 30 15 L 0 30 L 7 15 z"
             stroke="none"
             fill="red"
           />
@@ -147,6 +147,11 @@ export default {
         }
       } else if (type === 'anno:blur') {
         this.active = {}
+      } else if (type === 'anno:edit') {
+        if (data.uuid !== this.active.uuid) {
+          // only another annotation reassign
+          this.active = data
+        }
       }
     },
     onMouseDown (e) {

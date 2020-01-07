@@ -23,7 +23,12 @@ export default class EditHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleMousedown (e) {}
+  handleMousedown (e) {
+    if (this.current.uuid) {
+      this.current.edit = true
+      this.parent.callback({ type: 'anno:edit', data: this.current })
+    }
+  }
 
   /**
    * Handle document.mousemove event
@@ -31,6 +36,7 @@ export default class EditHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMousemove (e) {
+    if (this.current.edit) return
     this.detectAnno(e)
   }
 
@@ -46,7 +52,11 @@ export default class EditHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleKeyup (e) {}
+  handleKeyup (e) {
+    if (e.keyCode === 27) {
+      this.current.edit = false
+    }
+  }
 
   /**
    * Handle mouse leave event
