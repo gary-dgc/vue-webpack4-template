@@ -22,9 +22,10 @@ export default class PointHandler {
    *
    */
   reset () {
-    const _input = document.getElementById('pdf-annotate-point-input')
-    if (_input) {
-      _input.parentNode.removeChild(_input)
+    if (this.input && this.input.nodeType) {
+      this.input.removeEventListener('blur', this._blurRef)
+      this.input.removeEventListener('keyup', this._keyupRef)
+      this.input.parentNode.removeChild(this.input)
     }
     this.input = null
   }
@@ -49,7 +50,7 @@ export default class PointHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMouseup (e) {
-    const { size, color } = this.getConfig('point')
+    const { size, color } = this.getConfig('text')
     const { svg } = this.parent
     const rect = svg.getBoundingClientRect()
     this.input = document.createElement('input')
@@ -63,8 +64,11 @@ export default class PointHandler {
     this.input.style.fontSize = `${size}px`
     this.input.style.color = color
 
-    this.input.addEventListener('blur', this._inputBlur.bind(this))
-    this.input.addEventListener('keyup', this.handleKeyup.bind(this))
+    this._blurRef = this._inputBlur.bind(this)
+    this._keyupRef = this._handleKeyup.bind(this)
+
+    this.input.addEventListener('blur', this._blurRef)
+    this.input.addEventListener('keyup', this._keyupRef)
 
     svg.parentNode.appendChild(this.input)
 
@@ -76,13 +80,7 @@ export default class PointHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleKeyup (e) {
-    if (e.keyCode === 27) {
-      this.reset()
-    } else if (e.keyCode === 13) {
-      this.savePoint()
-    }
-  }
+  handleKeyup (e) {}
 
   /**
    * Handle mouse leave event
@@ -95,7 +93,20 @@ export default class PointHandler {
    * Handle input.blur event
    */
   _inputBlur () {
+    if (!this.input) return
     this.savePoint()
+  }
+
+  /**
+   * Handle input.keyup event
+   */
+  _handleKeyup (e) {
+    console.log('keyup ' + 116)
+    if (e.keyCode === 27) {
+      this.reset()
+    } else if (e.keyCode === 13) {
+      this.savePoint()
+    }
   }
 
   /**
@@ -103,19 +114,19 @@ export default class PointHandler {
     */
   savePoint () {
     const { input } = this
-    if (this.input.value.trim().length > 0) {
+
+    if (input.value.trim().length > 0) {
       const clientX = parseInt(input.style.left, 10)
       const clientY = parseInt(input.style.top, 10)
-      const { svg, viewport: { scale } } = this.parent
+      const { viewport: { scale } } = this.parent
       const { size } = this.getConfig('point')
-      const rect = svg.getBoundingClientRect()
 
       const annotation = Object.assign({
         type: 'point',
         content: input.value.trim()
       }, scaleDown(scale, {
-        x: clientX - rect.x,
-        y: clientY - rect.y,
+        x: clientX,
+        y: clientY,
         size: size
       })
       )
@@ -140,13 +151,14 @@ export default class PointHandler {
       y: a.y,
       size: a.size
     })
+    console.log(pos)
     setAttributes(use, {
       x: pos.x,
       y: pos.y,
       width: `${pos.size}px`,
       height: `${pos.size}px`
     })
-
+    use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#blast-icon')
     return use
   }
 }
