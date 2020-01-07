@@ -67,7 +67,7 @@ export default class TextHandler {
     this.input.style.color = color
 
     this.input.addEventListener('blur', this._inputBlur.bind(this))
-    this.input.addEventListener('keyup', this._inputKeyup.bind(this))
+    this.input.addEventListener('keyup', this.handleKeyup.bind(this))
 
     svg.parentNode.appendChild(this.input)
 
@@ -79,7 +79,13 @@ export default class TextHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleKeyup (e) {}
+  handleKeyup (e) {
+    if (e.keyCode === 27) {
+      this.reset()
+    } else if (e.keyCode === 13) {
+      this.saveText()
+    }
+  }
 
   /**
    * Handle mouse leave event
@@ -87,19 +93,6 @@ export default class TextHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMouseleave (e) {}
-
-  /**
-    * Handle input.keyup event
-    *
-    * @param {Event} e The DOM event to handle
-    */
-  _inputKeyup (e) {
-    if (e.keyCode === 27) {
-      this.reset()
-    } else if (e.keyCode === 13) {
-      this.saveText()
-    }
-  }
 
   /**
    * Handle input.blur event
@@ -123,7 +116,7 @@ export default class TextHandler {
       const { size, color } = this.getConfig('text')
       const rect = svg.getBoundingClientRect()
       const annotation = Object.assign({
-        type: 'textbox',
+        type: 'text',
         size,
         color,
         content: input.value.trim()
