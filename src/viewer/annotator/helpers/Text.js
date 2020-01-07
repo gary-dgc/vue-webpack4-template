@@ -25,7 +25,7 @@ export default class TextHandler {
   reset () {
     if (this.input && this.input.nodeType) {
       this.input.removeEventListener('blur', this._inputBlur)
-      this.input.removeEventListener('keyup', this._inputKeyup)
+      this.input.removeEventListener('keyup', this.handleKeyup)
       const { svg } = this.parent
       svg.parentNode.removeChild(this.input)
     }
