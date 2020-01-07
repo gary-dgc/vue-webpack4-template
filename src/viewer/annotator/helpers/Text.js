@@ -12,11 +12,18 @@ import {
 export default class TextHandler {
   constructor (parent) {
     this.support = ['text'] // support command mode
-    this.input = undefined
     this.parent = parent
     this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId
     this.getConfig = parent.getConfig
+  }
+
+  /**
+   * Reset the handler for active state
+   *
+   */
+  reset () {
+    this.input = undefined
   }
 
   /**

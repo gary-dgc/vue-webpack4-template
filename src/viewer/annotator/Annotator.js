@@ -101,6 +101,9 @@ class Annotator {
     if (!type) return
     this.type = type
     this.handler = this.helpers[this.type] // reset handler
+    if (this.handler.reset) {
+      this.handler.reset()
+    }
   }
 
   /**

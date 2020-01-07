@@ -10,11 +10,19 @@ import {
 export default class EditHandler {
   constructor (parent) {
     this.support = ['edit'] // support command mode
-    this.overlay = undefined
     this.parent = parent
     this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId
     this.getConfig = parent.getConfig
+    this.reset()
+  }
+
+  /**
+   * Reset the handler for active state
+   *
+   */
+  reset () {
+    this.overlay = undefined
     this.current = {}
   }
 

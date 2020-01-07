@@ -15,6 +15,14 @@ export default class LineHandler {
     this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId
     this.getConfig = parent.getConfig
+    this.reset()
+  }
+
+  /**
+   * Reset the handler for active state
+   *
+   */
+  reset () {
     this.path = null
     this.origin = {}
     this.end = {}

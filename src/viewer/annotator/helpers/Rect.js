@@ -21,6 +21,12 @@ export default class RectHandler {
   }
 
   /**
+   * Reset the handler for active state
+   *
+   */
+  reset () { }
+
+  /**
    * Handle document.mousedown event
    *
    * @param {Event} e The DOM event to handle

@@ -16,8 +16,20 @@ export default class PenHandler {
     this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId
     this.getConfig = parent.getConfig
-    this.path = null
+    this.reset()
+  }
+
+  /**
+   * Reset the handler for active state
+   *
+   */
+  reset () {
     this.lines = []
+    if (this.path && this.path.nodeType) {
+      const { svg } = this.parent
+      svg.removeChild(this.path)
+    }
+    this.path = null
   }
 
   /**
@@ -58,7 +70,7 @@ export default class PenHandler {
       // Add the annotation
       this.parent.callback({ type: 'anno:add', data: anno })
     }
-    this._reset()
+    this.reset()
   }
 
   /**
@@ -69,20 +81,8 @@ export default class PenHandler {
   handleKeyup (e) {
     // Cancel rect if Esc is pressed
     if (e.keyCode === 27) {
-      this._reset()
+      this.reset()
     }
-  }
-
-  /**
-   * Reset the operation state
-  */
-  _reset () {
-    this.lines = []
-    if (this.path) {
-      const { svg } = this.parent
-      svg.removeChild(this.path)
-    }
-    this.path = null
   }
 
   /**

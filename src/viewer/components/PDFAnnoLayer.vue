@@ -15,16 +15,16 @@
       <defs>
         <marker
           id="red-arrowhead"
-          viewBox="0 0 30 30"
-          refX="22"
-          refY="15"
+          viewBox="0 0 20 20"
+          refX="10"
+          refY="10"
           markerUnits="strokeWidth"
-          markerWidth="6"
-          markerHeight="4"
+          markerWidth="8"
+          markerHeight="8"
           orient="auto"
         >
           <path
-            d="M 7 15 L 0 0 L 30 15 L 0 30 L 7 15 z"
+            d="M 7 10 L 0 3 L 20 10 L 0 17 L 7 10 z"
             stroke="none"
             fill="red"
           />

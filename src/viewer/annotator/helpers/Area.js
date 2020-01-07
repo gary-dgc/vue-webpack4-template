@@ -14,13 +14,22 @@ import {
 export default class AreaHandler {
   constructor (parent) {
     this.support = ['area'] // support command mode
-    this.overlay = undefined
-    this.originX = 0
-    this.originY = 0
+
     this.parent = parent
     this.getAnnoType = () => parent.type
     this.getDocId = parent.getDocId
     this.getConfig = parent.getConfig
+    this.reset()
+  }
+
+  /**
+   * Reset the handler for active state
+   *
+   */
+  reset () {
+    this.overlay = undefined
+    this.originX = 0
+    this.originY = 0
   }
 
   /**
