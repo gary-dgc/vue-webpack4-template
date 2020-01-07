@@ -24,12 +24,11 @@ export default class TextHandler {
    */
   reset () {
     if (this.input && this.input.nodeType) {
-      this.input.removeEventListener('blur', this._inputBlur)
-      this.input.removeEventListener('keyup', this.handleKeyup)
-      const { svg } = this.parent
-      svg.parentNode.removeChild(this.input)
+      this.input.removeEventListener('blur', this._blurRef)
+      this.input.removeEventListener('keyup', this._keyupRef)
+      this.input.parentNode.removeChild(this.input)
     }
-    this.input = undefined
+    this.input = null
   }
 
   /**
@@ -66,8 +65,11 @@ export default class TextHandler {
     this.input.style.fontSize = `${size}px`
     this.input.style.color = color
 
-    this.input.addEventListener('blur', this._inputBlur.bind(this))
-    this.input.addEventListener('keyup', this.handleKeyup.bind(this))
+    this._blurRef = this._inputBlur.bind(this)
+    this._keyupRef = this._handleKeyup.bind(this)
+
+    this.input.addEventListener('blur', this._blurRef)
+    this.input.addEventListener('keyup', this._keyupRef)
 
     svg.parentNode.appendChild(this.input)
 
@@ -79,13 +81,7 @@ export default class TextHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleKeyup (e) {
-    if (e.keyCode === 27) {
-      this.reset()
-    } else if (e.keyCode === 13) {
-      this.saveText()
-    }
-  }
+  handleKeyup (e) {}
 
   /**
    * Handle mouse leave event
@@ -98,7 +94,19 @@ export default class TextHandler {
    * Handle input.blur event
    */
   _inputBlur () {
+    if (!this.input) return
     this.saveText()
+  }
+
+  /**
+   * Handle input.keyup event
+   */
+  _handleKeyup (e) {
+    if (e.keyCode === 27) {
+      this.reset()
+    } else if (e.keyCode === 13) {
+      this.saveText()
+    }
   }
 
   /**
@@ -109,20 +117,17 @@ export default class TextHandler {
     if (this.input.value.trim().length > 0) {
       const clientX = parseInt(input.style.left, 10)
       const clientY = parseInt(input.style.top, 10)
-      const { svg, viewport: { scale } } = this.parent
-      if (!svg) {
-        return
-      }
+      const { viewport: { scale } } = this.parent
       const { size, color } = this.getConfig('text')
-      const rect = svg.getBoundingClientRect()
+
       const annotation = Object.assign({
         type: 'text',
         size,
         color,
         content: input.value.trim()
       }, scaleDown(scale, {
-        x: clientX - rect.left,
-        y: clientY - rect.top,
+        x: clientX,
+        y: clientY,
         width: input.offsetWidth,
         height: input.offsetHeight
       })

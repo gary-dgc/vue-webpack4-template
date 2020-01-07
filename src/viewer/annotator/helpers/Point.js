@@ -101,7 +101,6 @@ export default class PointHandler {
    * Handle input.keyup event
    */
   _handleKeyup (e) {
-    console.log('keyup ' + 116)
     if (e.keyCode === 27) {
       this.reset()
     } else if (e.keyCode === 13) {
@@ -151,7 +150,7 @@ export default class PointHandler {
       y: a.y,
       size: a.size
     })
-    console.log(pos)
+
     setAttributes(use, {
       x: pos.x,
       y: pos.y,
