@@ -179,6 +179,7 @@ class Annotator {
   }
 
   /**
+   * !!! Internal Use Only !!!
    * Render the annotation
    * @param {Annotation} annotation data
   */
@@ -217,6 +218,7 @@ class Annotator {
   }
 
   /**
+   * !!! Internal Use Only !!!
    * Remove the annotation dom element
   **/
   _removeAnno (annotation) {
