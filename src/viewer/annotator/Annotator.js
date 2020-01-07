@@ -249,6 +249,10 @@ class Annotator {
     const { type, data } = arguments[0]
     if (['anno:add'].includes(type)) {
       adapter.addAnnotation(this.getDocId(), this.pageNumber, data)
+    } else if (['keyup'].includes(type)) {
+      // catch the keyup event from window, forward it to handler
+      this.handleKeyup(data)
+      return
     }
     // let's forward the data to ui component
     this._callback(...arguments)

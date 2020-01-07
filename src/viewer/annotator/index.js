@@ -1,4 +1,8 @@
-import { getAnnotator, enableAnno, configAnno, fireAnnoEvent, addAnnoEventListener, removeAnnoEventListener } from './Annotator'
+import {
+  getAnnotator, enableAnno, configAnno,
+  fireAnnoEvent, addAnnoEventListener,
+  removeAnnoEventListener
+} from './Annotator'
 import { setAnnoInfo, getAnnoInfo } from './Config'
 import adapter from './adapter'
 

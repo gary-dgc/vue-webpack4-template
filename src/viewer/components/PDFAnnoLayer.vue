@@ -5,7 +5,7 @@
     @mouseup.left="onMouseUp($event)"
     @mousemove.left="onMouseMove($event)"
     @mouseleave.left="onMouseLeave($event)"
-    @keyup="onBoardKeyup"
+    @keyup="onBoardKeyup($event)"
   >
     <svg
       ref="anno-layer"
@@ -213,6 +213,11 @@ export default {
           // only another annotation reassign
           this.active = data
         }
+      } else if (type === 'anno:cancel') {
+        if (data.uuid === this.active.uuid) {
+          // only another annotation reassign
+          this.active = {}
+        }
       }
     },
     onMouseDown (e) {
@@ -232,6 +237,7 @@ export default {
       this.annotator.handleMouseleave(e)
     },
     onBoardKeyup (e) {
+      console.log(e)
       if (!this.annotator) return
       this.annotator.handleKeyup(e)
     }

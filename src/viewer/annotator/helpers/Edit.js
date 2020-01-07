@@ -62,6 +62,7 @@ export default class EditHandler {
    */
   handleKeyup (e) {
     if (e.keyCode === 27) {
+      this.parent.callback({ type: 'anno:cancel', data: this.current })
       this.current.edit = false
     }
   }

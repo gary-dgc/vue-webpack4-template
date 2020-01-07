@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { setAnnoInfo, enableAnno } from '../annotator'
+import { setAnnoInfo, enableAnno, fireAnnoEvent } from '../annotator'
 import PDFDocument from './PDFDocument.vue'
 import PDFToolbar from './PDFToolbar.vue'
 import PDFData from './PDFData.vue'
@@ -47,18 +47,15 @@ function floor (value, precision) {
 
 export default {
   name: 'PDFViewer',
-
   components: {
     PDFDocument,
     PDFToolbar,
     PDFData,
     PDFPreview
   },
-
   props: {
     url: { type: String, default: '' }
   },
-
   data () {
     return {
       scale: undefined,
@@ -68,49 +65,50 @@ export default {
       isPreviewEnabled: false
     }
   },
-
   watch: {
     url () {
       this.currentPage = undefined
       console.log('sdfsdf')
     }
   },
-
+  created () {
+    // catch the keyup event
+    window.addEventListener('keyup', this.onKeyupEvent)
+  },
   mounted () {
     setAnnoInfo({ doc_id: 'D0101012' })
     document.body.classList.add('overflow-hidden')
   },
-
+  destroyed () {
+    // remove the keyup event
+    window.removeEventListener('keyup', this.onKeyupEvent)
+  },
   methods: {
+    onKeyupEvent (e) {
+      fireAnnoEvent('anno:event', { type: 'keyup', data: e })
+    },
     onDocumentRendered () {
       this.$emit('document-errored', this.url)
     },
-
     onDocumentErrored (e) {
       this.$emit('document-errored', e)
     },
-
     updateScale (scale) {
       const roundedScale = floor(scale, 2)
       this.scale = roundedScale
     },
-
     updateFit (fit) {
       this.fit = fit
     },
-
     updatePageCount (pageCount) {
       this.pageCount = pageCount
     },
-
     updateCurrentPage (pageNumber) {
       this.currentPage = pageNumber
     },
-
     togglePreview () {
       this.isPreviewEnabled = !this.isPreviewEnabled
     },
-
     annoAction (type) {
       enableAnno({ type })
     }
