@@ -109,7 +109,7 @@ export default class TextHandler {
     if (this.input.value.trim().length > 0) {
       const clientX = parseInt(input.style.left, 10)
       const clientY = parseInt(input.style.top, 10)
-      const { svg } = this.parent
+      const { svg, viewport: { scale } } = this.parent
       if (!svg) {
         return
       }
@@ -120,7 +120,7 @@ export default class TextHandler {
         size,
         color,
         content: input.value.trim()
-      }, scaleDown(svg, {
+      }, scaleDown(scale, {
         x: clientX - rect.left,
         y: clientY - rect.top,
         width: input.offsetWidth,

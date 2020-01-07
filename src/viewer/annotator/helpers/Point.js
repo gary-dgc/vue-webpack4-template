@@ -2,7 +2,6 @@ import {
   BORDER_COLOR,
   scaleDown,
   scaleUp,
-  normalizeColor,
   setAttributes
 } from './Utils'
 /**
@@ -23,13 +22,11 @@ export default class PointHandler {
    *
    */
   reset () {
-    if (this.input && this.input.nodeType) {
-      this.input.removeEventListener('blur', this._inputBlur)
-      this.input.removeEventListener('keyup', this.handleKeyup)
-      const { svg } = this.parent
-      svg.parentNode.removeChild(this.input)
+    const _input = document.getElementById('pdf-annotate-point-input')
+    if (_input) {
+      _input.parentNode.removeChild(_input)
     }
-    this.input = undefined
+    this.input = null
   }
 
   /**
@@ -52,12 +49,12 @@ export default class PointHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMouseup (e) {
-    const { size, color } = this.getConfig('text')
+    const { size, color } = this.getConfig('point')
     const { svg } = this.parent
     const rect = svg.getBoundingClientRect()
     this.input = document.createElement('input')
-    this.input.setAttribute('id', 'pdf-annotate-text-input')
-    this.input.setAttribute('placeholder', 'Enter text')
+    this.input.setAttribute('id', 'pdf-annotate-point-input')
+    this.input.setAttribute('placeholder', 'Enter Comment')
     this.input.style.border = `1px dashed ${BORDER_COLOR}`
     this.input.style.borderRadius = '3px'
     this.input.style.position = 'absolute'
@@ -83,7 +80,7 @@ export default class PointHandler {
     if (e.keyCode === 27) {
       this.reset()
     } else if (e.keyCode === 13) {
-      this.saveText()
+      this.savePoint()
     }
   }
 
@@ -92,9 +89,7 @@ export default class PointHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleMouseleave (e) {
-    this.reset()
-  }
+  handleMouseleave (e) {}
 
   /**
    * Handle input.blur event
@@ -111,15 +106,16 @@ export default class PointHandler {
     if (this.input.value.trim().length > 0) {
       const clientX = parseInt(input.style.left, 10)
       const clientY = parseInt(input.style.top, 10)
-      const { svg } = this.parent
+      const { svg, viewport: { scale } } = this.parent
       const { size } = this.getConfig('point')
       const rect = svg.getBoundingClientRect()
+
       const annotation = Object.assign({
         type: 'point',
         content: input.value.trim()
-      }, scaleDown(svg, {
-        x: clientX - rect.left,
-        y: clientY - rect.top,
+      }, scaleDown(scale, {
+        x: clientX - rect.x,
+        y: clientY - rect.y,
         size: size
       })
       )

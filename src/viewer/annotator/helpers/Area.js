@@ -59,6 +59,7 @@ export default class AreaHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMousemove (e) {
+    if (!this.overlay) return
     const { svg } = this.parent
     const rect = svg.getBoundingClientRect()
 

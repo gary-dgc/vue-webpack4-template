@@ -41,7 +41,7 @@
         class="icon"
         :class="{active: action === 'area'}"
         @click.prevent.stop="doAction('area')"
-      >Area</a>
+      >Ar</a>
       <a
         class="icon"
         :class="{active: action === 'highlight'}"
@@ -71,7 +71,7 @@
         class="icon"
         :class="{active: action === 'point'}"
         @click.prevent.stop="doAction('point')"
-      >Tx</a>
+      >Pt</a>
     </div>
   </div>
 </template>
