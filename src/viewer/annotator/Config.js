@@ -9,7 +9,7 @@ const AnnoInfo = {
     color: '#FF0000'
   },
   text: {
-    size: 10,
+    size: 24,
     color: '#FF0000'
   },
   point: {

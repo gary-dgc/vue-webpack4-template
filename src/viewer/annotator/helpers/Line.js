@@ -72,6 +72,7 @@ export default class LineHandler {
     }
     const c = Math.sqrt(diff.x * diff.x + diff.y * diff.y)
     if (c > 8) {
+      // ignore length less than 8 px
       const { color, size } = this.getConfig('pen')
       const anno = {
         type: 'line',

@@ -152,22 +152,23 @@ export default class EditHandler {
     let rect = { x: 0, y: 0, width: 0, height: 0 }
     if (['highlight', 'strikeout'].includes(type)) {
       rectangles.forEach(r => {
+        // move horizontal pos to left
         if (rect.x === 0 || rect.x > r.x) {
-          rect.x = r.x
           rect.width += rect.x > r.x ? rect.x - r.x : 0
+          rect.x = r.x
         }
-
+        // move vertical pos to top
         if (rect.y === 0 || rect.y > r.y) {
-          rect.y = r.y
           rect.height += rect.y > r.y ? rect.y - r.y : 0
+          rect.y = r.y
         }
-
+        // extend width
         if (rect.width === 0) {
           rect.width = r.width
         } else if (rect.x + rect.width < r.x + r.width) {
           rect.width = r.x + r.width - rect.x
         }
-
+        // extend height
         if (rect.height === 0) {
           rect.height = r.height
         } else if (rect.y + rect.height < r.y + r.height) {
