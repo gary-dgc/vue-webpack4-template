@@ -72,7 +72,7 @@ export default {
     }
   },
   created () {
-    // catch the keyup event
+    // catch the keyup event from window
     window.addEventListener('keyup', this.onKeyupEvent)
   },
   mounted () {
@@ -80,7 +80,7 @@ export default {
     document.body.classList.add('overflow-hidden')
   },
   destroyed () {
-    // remove the keyup event
+    // remove the keyup event from window
     window.removeEventListener('keyup', this.onKeyupEvent)
   },
   methods: {

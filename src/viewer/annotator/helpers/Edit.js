@@ -24,6 +24,7 @@ export default class EditHandler {
   reset () {
     this.overlay = undefined
     this.current = {}
+    this.range = {}
   }
 
   /**
@@ -53,7 +54,25 @@ export default class EditHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleMouseup (e) {}
+  handleMouseup (e) {
+    const { svg } = this.parent
+    const rect = svg.getBoundingClientRect()
+    const rpos = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    }
+
+    if (this.current.edit) {
+      const rdiff = {
+        x: rpos.x - this.range.x,
+        y: rpos.y - this.range.y
+      }
+      if (rdiff.x < 0 || rdiff.x > this.range.width || rdiff.y < 0 || rdiff.y > this.range.height) {
+        this.parent.callback({ type: 'anno:cancel', data: this.current })
+        this.current.edit = false
+      }
+    }
+  }
 
   /**
    * Handle document.keyup event
@@ -88,6 +107,7 @@ export default class EditHandler {
     if (this.current.uuid && this._checkRange(this.current, rpos)) {
       // found still in current anno
       const data = this.calcAnnoRange(this.current)
+      this.range = data
       this.parent.callback({ type: 'anno:focus', data })
       return
     } else {
@@ -106,6 +126,7 @@ export default class EditHandler {
       })
       if (this.current.uuid) {
         const data = this.calcAnnoRange(this.current)
+        this.range = data
         this.parent.callback({ type: 'anno:focus', data })
       } else {
         this.parent.callback({ type: 'anno:blur', data: this.current })
