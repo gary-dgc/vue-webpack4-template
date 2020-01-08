@@ -213,7 +213,6 @@ class Annotator {
    * Remove all the annotations dom element from svg
   **/
   remove (annotation) {
-    console.log(annotation)
     if (annotation) {
       adapter.deleteAnnotation(this.getDocId(), annotation.uuid)
         .then(() => {

@@ -101,6 +101,7 @@
       v-if="active.uuid"
       :key="active.uuid"
       :data="active"
+      :mode="mode"
       :annotator="annotator"
       :scale="scale"
     />
@@ -134,6 +135,7 @@ export default {
       annotations: [],
       active: {},
       scale: undefined,
+      mode: '', // the state of annotation [edit | focus]
       annoType: getAnnoInfo().anno_type,
       annotator: undefined
     }
@@ -202,18 +204,22 @@ export default {
         this.annotations.push(data)
         this.annotator.render(data)
       } else if (type === 'anno:focus') {
+        this.mode = 'focus'
         if (data.uuid !== this.active.uuid) {
           // only another annotation reassign
           this.active = data
         }
       } else if (type === 'anno:blur') {
         this.active = {}
+        this.mode = 'blur'
       } else if (type === 'anno:edit') {
+        this.mode = 'edit'
         if (data.uuid !== this.active.uuid) {
           // only another annotation reassign
           this.active = data
         }
       } else if (type === 'anno:cancel') {
+        this.mode = 'cancel'
         if (data.uuid === this.active.uuid) {
           // only another annotation reassign
           this.active = {}

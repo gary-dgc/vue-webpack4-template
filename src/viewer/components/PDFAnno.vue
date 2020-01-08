@@ -2,6 +2,10 @@
   <div
     class="anno-edit"
     :style="style"
+    @mousedown.stop="onMousedown($event)"
+    @mouseup.stop="onMouseup($event)"
+    @mouseleave.stop="onMouseup($event)"
+    @mousemove.stop="onMousemove($event)"
   >
     <div
       ref="note-input"
@@ -61,6 +65,10 @@ export default {
       type: Number,
       default: 1.0
     },
+    mode: {
+      type: String,
+      default: ''
+    },
     data: {
       type: Object,
       default: () => {}
@@ -70,9 +78,17 @@ export default {
       default: () => {}
     }
   },
+  data () {
+    return {
+      origin: this.data,
+      isDown: false,
+      offset: { x: 0, y: 0 }
+    }
+  },
   computed: {
     style () {
-      const { x, y, width, height } = this.data
+      const { x, y, width, height } = this.origin
+      console.log(x)
       return {
         top: `${y - OFFSET.y}px`,
         left: `${x - OFFSET.x}px`,
@@ -90,6 +106,25 @@ export default {
   methods: {
     onAnnoDelete () {
       this.annotator.remove(this.data)
+    },
+    onMousedown (e) {
+      this.isDown = true
+      if (this.mode === 'focus') {
+        this.annotator.handleMousedown(e)
+      }
+      this.offset.x = this.origin.x - e.clientX
+      this.offset.y = this.origin.y - e.clientY
+    },
+    onMouseup () {
+      this.isDown = false
+    },
+    onMousemove (e) {
+      console.log(this.isDown)
+      if (this.isDown) {
+        const { clientX, clientY } = e
+        this.origin.x = clientX + this.offset.x
+        this.origin.y = clientY + this.offset.y
+      }
     }
   }
 }
@@ -98,7 +133,7 @@ export default {
 .anno-edit{
   position: absolute;
   border: 2px dashed gray;
-  cursor: pointer;
+  cursor: default;
   /* filter:alpha(opacity = 10);
    opacity:0.1;
    background-color:green; */
@@ -123,6 +158,7 @@ export default {
   position: absolute;
   top: 5px;
   right: 5px;
+  cursor: pointer;
 }
 .anno-edit .anno-button > svg{
   width: 20px;
