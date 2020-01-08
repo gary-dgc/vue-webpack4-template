@@ -1,9 +1,13 @@
 /**
- * The annotation information
+ * The annotation information,
+ * all the size is measured in viewport 1.0 scale
 **/
 const AnnoInfo = {
   doc_id: '',
   anno_type: 'edit',
+  size: {
+    min: 10 // min width or height
+  },
   pen: {
     size: 2,
     color: '#FF0000'

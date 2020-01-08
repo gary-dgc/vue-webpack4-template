@@ -53,7 +53,7 @@
   </div>
 </template>
 <script>
-const OFFSET = { x: 5, y: 5 }
+const OFFSET = { x: 2, y: 2 }
 export default {
   name: 'AnnoEdit',
   props: {

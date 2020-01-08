@@ -256,6 +256,15 @@ export default class EditHandler {
       rect.height = size
     }
 
+    const { min } = this.getConfig('size')
+    if (rect.width < min) {
+      rect.x -= (min - rect.width) / 2
+      rect.width = min
+    }
+    if (rect.height < min) {
+      rect.y -= (min - rect.height) / 2
+      rect.height = min
+    }
     rect = scaleUp(scale, rect)
     rect.uuid = annotation.uuid
     rect.type = annotation.type
