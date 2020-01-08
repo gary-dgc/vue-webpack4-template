@@ -3,7 +3,6 @@
     <header class="pdf-viewer__header box-shadow">
       <PDFToolbar v-bind="{scale, updateFit, updateScale, currentPage, updateCurrentPage, pageCount, togglePreview, isPreviewEnabled, annoAction}" />
     </header>
-
     <PDFData
       class="pdf-viewer__main"
       :url="url"
