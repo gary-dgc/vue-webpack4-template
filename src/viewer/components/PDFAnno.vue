@@ -124,7 +124,6 @@ export default {
   },
   computed: {
     style () {
-      console.log(this.data)
       let { x, y, width, height } = this.origin
       if (width < MIN.width) {
         x -= (MIN.width - width) / 2
