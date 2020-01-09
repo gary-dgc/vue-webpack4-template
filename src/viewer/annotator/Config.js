@@ -6,7 +6,7 @@ const AnnoInfo = {
   doc_id: '',
   anno_type: 'edit',
   size: {
-    min: 10 // min width or height
+    min: 15 // min width or height
   },
   pen: {
     size: 2,
