@@ -198,7 +198,7 @@ export default {
       })
     },
     onAnnoEvent ({ type, setting, data }) {
-      if (['highlight', 'strikeout', 'area', 'edit'].includes(type)) {
+      if (['highlight', 'strikeout', 'area', 'edit', 'pen', 'line', 'drawing', 'text', 'point'].includes(type)) {
         this.annoType = type
       } else if (type === 'anno:add') {
         this.annotations.push(data)

@@ -67,7 +67,6 @@ export default {
   watch: {
     url () {
       this.currentPage = undefined
-      console.log('sdfsdf')
     }
   },
   created () {
@@ -84,7 +83,7 @@ export default {
   },
   methods: {
     onKeyupEvent (e) {
-      fireAnnoEvent('anno:event', { type: 'keyup', data: e })
+      fireAnnoEvent('anno:event', { type: 'anno:keyup', data: e })
     },
     onDocumentRendered () {
       this.$emit('document-errored', this.url)

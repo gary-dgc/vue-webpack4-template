@@ -4,7 +4,6 @@
     :style="style"
     @mousedown.stop="onMousedown($event)"
     @mouseup.stop="onMouseup($event)"
-    @mouseleave.stop="onMouseup($event)"
   >
     <div
       ref="note-input"
@@ -53,6 +52,7 @@
       </svg>
     </div>
     <div
+      v-if="isMovable"
       class="anno-button anno-drag"
       @mousemove.stop="onMousemove($event)"
     >
@@ -117,13 +117,14 @@ export default {
   },
   data () {
     return {
-      origin: this.data,
+      origin: Object.assign({}, this.data),
       isDown: false,
       offset: { x: 0, y: 0 }
     }
   },
   computed: {
     style () {
+      console.log(this.data)
       let { x, y, width, height } = this.origin
       if (width < MIN.width) {
         x -= (MIN.width - width) / 2
@@ -139,6 +140,9 @@ export default {
         width: `${width + OFFSET.x * 2}px`,
         height: `${height + OFFSET.y * 2}px`
       }
+    },
+    isMovable () {
+      return !['highlight', 'strikeout'].includes(this.data.type)
     }
   },
   destroyed () {
@@ -159,8 +163,13 @@ export default {
       this.offset.x = this.origin.x - e.clientX
       this.offset.y = this.origin.y - e.clientY
     },
-    onMouseup () {
+    onMouseup (e) {
       this.isDown = false
+      const offset = {
+        x: this.origin.x - this.data.x,
+        y: this.origin.y - this.data.y
+      }
+      this.annotator.handleMouseup(e, { uuid: this.data.uuid, offset })
     },
     onMousemove (e) {
       if (this.isDown) {

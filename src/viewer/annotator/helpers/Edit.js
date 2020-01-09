@@ -22,7 +22,6 @@ export default class EditHandler {
    *
    */
   reset () {
-    this.overlay = undefined
     this.current = {}
     this.range = {}
   }
@@ -54,23 +53,31 @@ export default class EditHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleMouseup (e) {
+  handleMouseup (e, extra) {
     const { svg } = this.parent
     const rect = svg.getBoundingClientRect()
     const rpos = {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
     }
-
     if (this.current.edit) {
       const rdiff = {
         x: rpos.x - this.range.x,
         y: rpos.y - this.range.y
       }
+
       if (rdiff.x < 0 || rdiff.x > this.range.width || rdiff.y < 0 || rdiff.y > this.range.height) {
         this.parent.callback({ type: 'anno:cancel', data: this.current })
         this.current.edit = false
       }
+    }
+    const { offset } = extra || { offset: { x: 0, y: 0 } }
+    if (offset.x !== 0 && offset.y !== 0 && this.current && extra.uuid === this.current.uuid) {
+      const newone = this._moveAnno(this.current, offset)
+      this.parent.render(newone)
+      adapter.editAnnotation(this.getDocId(), newone.uuid, newone).then(() => {
+        this.reset()
+      })
     }
   }
 
@@ -193,7 +200,7 @@ export default class EditHandler {
 
   /**
    * Calculate annotation ui range
-   *
+   * the coordinate is applied a scale
   **/
   calcAnnoRange (annotation) {
     const { viewport: { scale } } = this.parent
@@ -270,5 +277,41 @@ export default class EditHandler {
     rect.type = annotation.type
 
     return rect
+  }
+
+  /**
+   * Move annotation
+   * offset: {x, y }
+  **/
+  _moveAnno (annotation, offset) {
+    const { viewport: { scale } } = this.parent
+
+    offset = scaleDown(scale, offset)
+    const { type, rectangles, x, y, lines } = annotation
+    if (['highlight', 'strikeout'].includes(type)) {
+      const newrects = rectangles.map(r => {
+        return {
+          x: r.x + offset.x,
+          y: r.y + offset.y,
+          width: r.width,
+          height: r.height
+        }
+      })
+      annotation.rectangles = newrects
+      return annotation
+    } else if (['area', 'text', 'point'].includes(type)) {
+      annotation.x = x + offset.x
+      annotation.y = y + offset.y
+      return annotation
+    } else if (['line', 'drawing'].includes(type)) {
+      const newlines = lines.map(l => {
+        return {
+          x: l.x + offset.x,
+          y: l.y + offset.y
+        }
+      })
+      annotation.lines = newlines
+      return annotation
+    }
   }
 }
