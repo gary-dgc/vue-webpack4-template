@@ -7,7 +7,7 @@
     @pages-fetch="onPagesFetch"
   >
     <PDFThumbnail
-      v-bind="{scale, page, isPageFocused}"
+      v-bind="{page, isPageFocused}"
       @thumbnail-rendered="onThumbnailRendered"
       @thumbnail-errored="onThumbnailErrored"
       @page-focus="onPageFocused"
@@ -35,10 +35,6 @@ export default {
     pageCount: {
       type: Number,
       default: 0
-    },
-    scale: {
-      type: Number,
-      default: 1.0
     },
     currentPage: {
       type: Number,

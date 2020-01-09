@@ -23,39 +23,27 @@
 </template>
 
 <script>
-import debug from 'debug'
-
 import visible from '../directives/visible'
-const log = debug('app:components/PDFThumbnail')
-
 export default {
   name: 'PDFThumbnail',
-
   directives: {
     visible
   },
-
   props: {
     page: {
       type: Object, // instance of PDFPageProxy returned from pdf.getPage
       required: true
-    },
-    scale: {
-      required: true,
-      type: Number
     },
     isPageFocused: {
       type: Boolean,
       default: false
     }
   },
-
   data () {
     return {
       src: undefined
     }
   },
-
   computed: {
     viewport () {
       return this.page.getViewport({ scale: 1.0 })
@@ -65,26 +53,18 @@ export default {
       return this.page.pageNumber
     }
   },
-
   watch: {
     page: 'destroyPage',
     src: 'updateVisibility',
     scale: 'updateVisibility'
   },
-
-  mounted () {
-    log(`Page ${this.pageNumber} mounted`)
-  },
-
   beforeDestroy () {
     this.destroyPage(undefined, this.page)
   },
-
   methods: {
     focusPage () {
       this.$emit('page-focus', this.pageNumber)
     },
-
     drawPage () {
       if (this.renderTask) return
 
@@ -120,7 +100,6 @@ export default {
           })
         })
     },
-
     destroyPage (_newPage, page) {
       // PDFPageProxy#_destroy
       // https://mozilla.github.io/pdf.js/api/draft/PDFPageProxy.html
@@ -128,7 +107,6 @@ export default {
 
       this.destroyRenderTask()
     },
-
     destroyRenderTask () {
       if (!this.renderTask) return
 
@@ -137,14 +115,12 @@ export default {
       this.renderTask.cancel()
       delete this.renderTask
     },
-
     updateVisibility () {
       this.$parent.$emit('update-visibility')
     }
   }
 }
 </script>
-
 <style scoped>
 .pdf-thumbnail {
   cursor: pointer;

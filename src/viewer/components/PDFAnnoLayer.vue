@@ -243,7 +243,6 @@ export default {
       this.annotator.handleMouseleave(e)
     },
     onBoardKeyup (e) {
-      console.log(e)
       if (!this.annotator) return
       this.annotator.handleKeyup(e)
     }

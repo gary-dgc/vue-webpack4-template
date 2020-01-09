@@ -79,6 +79,7 @@ export default {
 
   watch: {
     fit (fit) {
+      console.log(fit)
       switch (fit) {
         case 'width':
           this.fitWidth()
