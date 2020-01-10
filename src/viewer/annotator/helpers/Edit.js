@@ -22,8 +22,11 @@ export default class EditHandler {
    *
    */
   reset () {
+    this.isMoving = false
+    this.isEditing = false
     this.current = {}
     this.range = {}
+    this.offset = { x: 0, y: 0 }
   }
 
   /**
@@ -32,9 +35,18 @@ export default class EditHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMousedown (e) {
+    const tgt = e.target.getAttribute('data-anno-button')
+
+    if (tgt === 'drag') {
+      this.isMoving = true
+      this.offset.x = this.range.x - e.clientX
+      this.offset.y = this.range.y - e.clientY
+    }
+
     if (this.current.uuid) {
-      this.current.edit = true
-      this.parent.callback({ type: 'anno:edit', data: this.current })
+      this.isEditing = true
+      const { uuid } = this.current
+      this.parent.callback({ type: 'anno:edit', data: { uuid } })
     }
   }
 
@@ -44,7 +56,15 @@ export default class EditHandler {
    * @param {Event} e The DOM event to handle
    */
   handleMousemove (e) {
-    if (this.current.edit) return
+    if (this.isMoving) {
+      const { clientX, clientY } = e
+      const origin = {
+        x: clientX + this.offset.x,
+        y: clientY + this.offset.y
+      }
+      this.parent.callback({ type: 'anno:move', data: origin })
+    }
+    if (this.isEditing) return
     this.detectAnno(e)
   }
 
@@ -53,31 +73,46 @@ export default class EditHandler {
    *
    * @param {Event} e The DOM event to handle
    */
-  handleMouseup (e, extra) {
+  handleMouseup (e) {
     const { svg } = this.parent
     const rect = svg.getBoundingClientRect()
+    const { uuid } = this.current
+    const { clientX, clientY } = e
     const rpos = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      x: clientX - rect.left,
+      y: clientY - rect.top
     }
-    if (this.current.edit) {
+    // const tgt = e.target.getAttribute('data-anno-button')
+    if (this.isMoving) {
+      this.isMoving = false
+      const offset = {
+        x: clientX + this.offset.x - this.range.x,
+        y: clientY + this.offset.y - this.range.y
+      }
+      if (offset.x !== 0 || offset.y !== 0) {
+        const newone = this._moveAnno(this.current, offset)
+        this.parent.render(newone)
+        adapter.editAnnotation(this.getDocId(), newone.uuid, newone).then(() => {
+          this.reset()
+          this.isEditing = false
+          this.parent.callback({ type: 'anno:cancel', data: { uuid } })
+        })
+      }
+
+      return // drag state mouse up then exit
+    }
+
+    if (this.isEditing) {
+      // click area other than edit area, then cancel the edit mode
       const rdiff = {
         x: rpos.x - this.range.x,
         y: rpos.y - this.range.y
       }
 
       if (rdiff.x < 0 || rdiff.x > this.range.width || rdiff.y < 0 || rdiff.y > this.range.height) {
-        this.parent.callback({ type: 'anno:cancel', data: this.current })
-        this.current.edit = false
+        this.parent.callback({ type: 'anno:cancel', data: { uuid } })
+        this.isEditing = false
       }
-    }
-    const { offset } = extra || { offset: { x: 0, y: 0 } }
-    if (offset.x !== 0 && offset.y !== 0 && this.current && extra.uuid === this.current.uuid) {
-      const newone = this._moveAnno(this.current, offset)
-      this.parent.render(newone)
-      adapter.editAnnotation(this.getDocId(), newone.uuid, newone).then(() => {
-        this.reset()
-      })
     }
   }
 
@@ -89,7 +124,7 @@ export default class EditHandler {
   handleKeyup (e) {
     if (e.keyCode === 27) {
       this.parent.callback({ type: 'anno:cancel', data: this.current })
-      this.current.edit = false
+      this.isEditing = false
     }
   }
 
@@ -111,6 +146,7 @@ export default class EditHandler {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
     })
+
     if (this.current.uuid && this._checkRange(this.current, rpos)) {
       // found still in current anno
       const data = this.calcAnnoRange(this.current)
@@ -136,7 +172,8 @@ export default class EditHandler {
         this.range = data
         this.parent.callback({ type: 'anno:focus', data })
       } else {
-        this.parent.callback({ type: 'anno:blur', data: this.current })
+        const { uuid } = this.current
+        this.parent.callback({ type: 'anno:blur', data: { uuid } })
       }
     })
   }
@@ -204,7 +241,7 @@ export default class EditHandler {
   **/
   calcAnnoRange (annotation) {
     const { viewport: { scale } } = this.parent
-    const { type, rectangles, x, y, width, height, size, lines } = annotation
+    const { type, rectangles, x, y, width, height, size, lines, ...rest } = annotation
     let rect = { x: 0, y: 0, width: 0, height: 0 }
     if (['highlight', 'strikeout'].includes(type)) {
       rectangles.forEach(r => {
@@ -275,7 +312,8 @@ export default class EditHandler {
     rect = scaleUp(scale, rect)
     rect.uuid = annotation.uuid
     rect.type = annotation.type
-
+    // assign other attributes
+    Object.assign(rect, rest)
     return rect
   }
 

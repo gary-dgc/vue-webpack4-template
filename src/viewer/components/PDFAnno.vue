@@ -3,7 +3,6 @@
     class="anno-edit"
     :style="style"
     @mousedown.stop="onMousedown($event)"
-    @mouseup.stop="onMouseup($event)"
   >
     <div
       ref="note-input"
@@ -16,8 +15,9 @@
     </div>
     <div
       class="anno-button"
+      data-anno-button="remove"
       @click.stop="onAnnoDelete"
-      @mousedown.stop="()=>{}"
+      @mouseup.stop="()=>{}"
     >
       <svg
         version="1.1"
@@ -27,6 +27,8 @@
         y="0px"
         viewBox="0 0 512 512"
         xml:space="preserve"
+        @click.stop="onAnnoDelete"
+        @mouseup.stop="()=>{}"
       >
         <g>
           <polygon points="353.574,176.526 313.496,175.056 304.807,412.34 344.885,413.804" />
@@ -53,8 +55,9 @@
     </div>
     <div
       v-if="isMovable"
+      data-anno-button="drag"
       class="anno-button anno-drag"
-      @mousemove.stop="onMousemove($event)"
+      @mousedown="onDragDown($event)"
     >
       <svg
         version="1.1"
@@ -65,6 +68,8 @@
         viewBox="0 0 215.35 215.35"
         style="enable-background:new 0 0 215.35 215.35;"
         xml:space="preserve"
+        data-anno-button="drag"
+        @mousedown="onDragDown($event)"
       >
         <g>
           <path
@@ -154,27 +159,16 @@ export default {
     onAnnoDelete () {
       this.annotator.remove(this.data)
     },
+    onDragDown (e) {
+      this.annotator.handleMousedown(e)
+    },
+    setPosOrigin (origin) {
+      this.origin.x = origin.x
+      this.origin.y = origin.y
+    },
     onMousedown (e) {
-      this.isDown = true
       if (this.mode === 'focus') {
         this.annotator.handleMousedown(e)
-      }
-      this.offset.x = this.origin.x - e.clientX
-      this.offset.y = this.origin.y - e.clientY
-    },
-    onMouseup (e) {
-      this.isDown = false
-      const offset = {
-        x: this.origin.x - this.data.x,
-        y: this.origin.y - this.data.y
-      }
-      this.annotator.handleMouseup(e, { uuid: this.data.uuid, offset })
-    },
-    onMousemove (e) {
-      if (this.isDown) {
-        const { clientX, clientY } = e
-        this.origin.x = clientX + this.offset.x
-        this.origin.y = clientY + this.offset.y
       }
     }
   }
@@ -203,8 +197,8 @@ export default {
 }
 .anno-edit .anno-button{
   color: gray;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   padding: 2px;
   position: absolute;
   top: 5px;
@@ -216,19 +210,25 @@ export default {
   color: gray;
   width: 22px;
   height: 22px;
-  padding: 2px;
+  padding: 3px;
   position: absolute;
   top: 5px;
   right: 31px;
   cursor: pointer;
 }
 
-.anno-edit .anno-button > svg{
+.anno-edit .anno-drag > svg{
+  width: 16px;
+  height: 16px;
+  fill:gray;
+}
+
+.anno-button > svg{
   width: 18px;
   height: 18px;
   fill:gray;
 }
-.anno-edit .anno-button:hover > svg{
+.anno-button:hover > svg{
   fill:#444;
 }
 </style>

@@ -99,6 +99,7 @@
     />
     <PDFAnno
       v-if="active.uuid"
+      ref="anno-edit"
       :key="active.uuid"
       :data="active"
       :mode="mode"
@@ -223,6 +224,11 @@ export default {
         if (data.uuid === this.active.uuid) {
           // only another annotation reassign
           this.active = {}
+        }
+      } else if (type === 'anno:move') {
+        this.mode = 'move'
+        if (this.$refs['anno-edit']) {
+          this.$refs['anno-edit'].setPosOrigin(data)
         }
       }
     },
