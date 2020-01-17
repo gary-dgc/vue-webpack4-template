@@ -105,7 +105,7 @@ export default class RectHandler {
       uuid: uuid(),
       type,
       color,
-      rectangles: [...rects].map((r) => {
+      rects: [...rects].map((r) => {
         let offset = 0
 
         if (type === 'strikeout') {
@@ -123,7 +123,7 @@ export default class RectHandler {
     }
 
     // Short circuit if no rectangles exist
-    if (annotation.rectangles.length === 0) {
+    if (annotation.rects.length === 0) {
       return
     }
 
@@ -145,7 +145,7 @@ export default class RectHandler {
         fillOpacity: 0.3
       })
 
-      a.rectangles.forEach((r) => {
+      a.rects.forEach((r) => {
         group.appendChild(this._createRect(r, offset))
       })
 
@@ -158,7 +158,7 @@ export default class RectHandler {
         strokeWidth: 2
       })
 
-      a.rectangles.forEach((r) => {
+      a.rects.forEach((r) => {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
         const attrs = scaleUp(scale, {
           x1: r.x,

@@ -93,13 +93,15 @@ export default class AreaHandler {
     if (type === 'area' && this.overlay) {
       const { svg } = this.parent
       const rect = svg.getBoundingClientRect()
-      this.saveRect(type, {
+      const area = {
         top: parseInt(this.overlay.style.top, 10) + rect.top,
         left: parseInt(this.overlay.style.left, 10) + rect.left,
         width: parseInt(this.overlay.style.width, 10),
         height: parseInt(this.overlay.style.height, 10)
-      })
-
+      }
+      if (area.width > 6 && area.height > 6) {
+        this.saveRect(type, area)
+      }
       this.overlay.parentNode.removeChild(this.overlay)
       this.overlay = null
     }

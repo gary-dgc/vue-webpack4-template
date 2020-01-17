@@ -218,6 +218,9 @@ class Annotator {
         .then(() => {
           this._removeAnno(annotation)
           this._callback({ type: 'anno:cancel', data: annotation })
+          if (this.handler) {
+            this.handler.reset()
+          }
         })
       return
     }

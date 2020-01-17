@@ -38,6 +38,7 @@ export default class EditHandler {
     const tgt = e.target.getAttribute('data-anno-button')
 
     if (tgt === 'drag') {
+      // move button click
       this.isMoving = true
       this.offset.x = this.range.x - e.clientX
       this.offset.y = this.range.y - e.clientY
@@ -184,10 +185,10 @@ export default class EditHandler {
    * return: true - found; false - unfound
   */
   _checkRange (annotation, rpos) {
-    const { type, rectangles, x, y, size, width, height, lines } = annotation
+    const { type, rects, x, y, size, width, height, lines } = annotation
     let found = false
     if (['highlight', 'strikeout'].includes(type)) {
-      rectangles.some(r => {
+      rects.some(r => {
         const rdiff = {
           x: rpos.x - r.x,
           y: rpos.y - r.y
@@ -241,10 +242,10 @@ export default class EditHandler {
   **/
   calcAnnoRange (annotation) {
     const { viewport: { scale } } = this.parent
-    const { type, rectangles, x, y, width, height, size, lines, ...rest } = annotation
+    const { type, rects, x, y, width, height, size, lines, ...rest } = annotation
     let rect = { x: 0, y: 0, width: 0, height: 0 }
     if (['highlight', 'strikeout'].includes(type)) {
-      rectangles.forEach(r => {
+      rects.forEach(r => {
         // move horizontal pos to left
         if (rect.x === 0 || rect.x > r.x) {
           rect.width += rect.x > r.x ? rect.x - r.x : 0
@@ -325,9 +326,9 @@ export default class EditHandler {
     const { viewport: { scale } } = this.parent
 
     offset = scaleDown(scale, offset)
-    const { type, rectangles, x, y, lines } = annotation
+    const { type, rects, x, y, lines } = annotation
     if (['highlight', 'strikeout'].includes(type)) {
-      const newrects = rectangles.map(r => {
+      const newrects = rects.map(r => {
         return {
           x: r.x + offset.x,
           y: r.y + offset.y,
@@ -335,7 +336,7 @@ export default class EditHandler {
           height: r.height
         }
       })
-      annotation.rectangles = newrects
+      annotation.rects = newrects
       return annotation
     } else if (['area', 'text', 'point'].includes(type)) {
       annotation.x = x + offset.x
