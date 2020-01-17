@@ -93,12 +93,12 @@ export default class AreaHandler {
     if (type === 'area' && this.overlay) {
       const { svg } = this.parent
       const rect = svg.getBoundingClientRect()
-      this.saveRect(type, [{
+      this.saveRect(type, {
         top: parseInt(this.overlay.style.top, 10) + rect.top,
         left: parseInt(this.overlay.style.left, 10) + rect.left,
         width: parseInt(this.overlay.style.width, 10),
         height: parseInt(this.overlay.style.height, 10)
-      }])
+      })
 
       this.overlay.parentNode.removeChild(this.overlay)
       this.overlay = null
@@ -133,43 +133,28 @@ export default class AreaHandler {
    * Save a rect annotation
    *
    * @param {String} type The type of rect (area, highlight, strikeout)
-   * @param {Array} rects The rects to use for annotation
+   * @param {Array} rect The rects to use for annotation
    * @param {String} color The color of the rects
    */
-  saveRect (type, rects, color) {
+  saveRect (type, rect, color) {
     let annotation = null
     const { svg, viewport: { scale } } = this.parent
     const boundingRect = svg.getBoundingClientRect()
-
+    const r = scaleDown(scale, {
+      y: rect.top - boundingRect.top,
+      x: rect.left - boundingRect.left,
+      width: rect.width,
+      height: rect.height
+    })
     // Initialize the annotation
     annotation = {
       uuid: uuid(),
       type,
       color,
-      rectangles: [...rects].map((r) => {
-        const rect = scaleDown(scale, {
-          y: r.top - boundingRect.top,
-          x: r.left - boundingRect.left,
-          width: r.width,
-          height: r.height
-        })
-        return rect
-      }).filter((r) => r.width > 0 && r.height > 0 && r.x > -1 && r.y > -1)
-    }
-
-    // Short circuit if no rectangles exist
-    if (annotation.rectangles.length === 0) {
-      return
-    }
-
-    // Special treatment for area as it only supports a single rect
-    if (type === 'area') {
-      const rect = annotation.rectangles[0]
-      delete annotation.rectangles
-      annotation.x = rect.x
-      annotation.y = rect.y
-      annotation.width = rect.width
-      annotation.height = rect.height
+      x: r.x,
+      y: r.y,
+      width: r.width,
+      height: r.height
     }
 
     // Add the annotation
